@@ -1,0 +1,10 @@
+{
+  "all": true,
+  "include": [
+    "tugas/**/*.js"
+  ],
+  "exclude": [
+    "**/*.spec.js",
+    "tugas/**/main.js"
+  ]
+}

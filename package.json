@@ -1,0 +1,30 @@
+{
+  "name": "message-bus",
+  "version": "1.0.0",
+  "description": "message bus using nats",
+  "main": "index.js",
+  "scripts": {
+    "test": "nyc mocha",
+    "start": "node .",
+    "dev": "nodemon .",
+    "lint": "eslint ."
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "chai": "^4.2.0",
+    "eslint": "^7.19.0",
+    "eslint-config-google": "^0.14.0",
+    "eslint-plugin-prettier": "^3.3.1",
+    "prettier": "^2.2.1",
+    "mocha": "^8.2.1",
+    "nyc": "^15.1.0"
+  },
+  "dependencies": {
+    "busboy": "^0.3.1",
+    "mime-types": "^2.1.28",
+    "minio": "^7.0.18",
+    "nats": "^1.4.12",
+    "nodemon": "^2.0.7"
+  }
+}
