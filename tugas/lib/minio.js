@@ -11,24 +11,6 @@ function randomFileName(mimetype) {
   );
 }
 
-function checkBucket(client, name) {
-  client.bucketExists(name, async (err, exists) => {
-    if (err) {
-      return err;
-    }
-
-    if (!exists) {
-      await makeBucket(client, name);
-    }
-  });
-}
-
-function makeBucket(client, name) {
-  client.makeBucket(name, (err) => {
-    if (err) return err;
-  });
-}
-
 async function saveFile(file, mimetype, fieldname) {
   const client = new Client({
     endPoint: '127.0.0.1',
@@ -39,14 +21,18 @@ async function saveFile(file, mimetype, fieldname) {
   });
   const filename = randomFileName(mimetype);
 
-  await checkBucket(client, fieldname);
+  const check = await client.bucketExists(fieldname);
+
+  if (!check) {
+    client.makeBucket(fieldname);
+  }
 
   return new Promise((resolve, reject) => {
-    client.putObject(fieldname, filename, file, (err, etag) => {
+    client.putObject(fieldname, filename, file, (err) => {
       if (err) {
         reject(err);
       }
-      resolve(etag);
+      resolve(filename);
     });
   });
 }
