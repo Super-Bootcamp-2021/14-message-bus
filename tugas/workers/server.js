@@ -1,11 +1,7 @@
 const { createServer } = require('http');
 const url = require('url');
 const { stdout } = require('process');
-const {
-  listSvc,
-  registerSvc,
-  removeSvc,
-} = require('./worker.service');
+const { listSvc, registerSvc, removeSvc } = require('./worker.service');
 
 let server;
 

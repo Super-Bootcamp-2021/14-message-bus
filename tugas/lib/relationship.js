@@ -25,7 +25,7 @@ async function init() {
   });
   await orm.authenticate();
   setupRelationship(orm);
-  await orm.sync({alter: true });
+  await orm.sync({ alter: true });
 }
 
 async function write(table, data) {

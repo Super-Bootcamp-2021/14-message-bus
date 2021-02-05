@@ -1,5 +1,3 @@
-const fs = require('fs');
-const path = require('path');
 const mime = require('mime-types');
 // eslint-disable-next-line no-unused-vars
 const { Readable } = require('stream');
@@ -13,8 +11,8 @@ const client = new Client({
   endPoint: '127.0.0.1',
   port: 9000,
   useSSL: false,
-  accessKey: 'local-minio',
-  secretKey: 'local-test-secret',
+  accessKey: 'minio',
+  secretKey: 'miniostorage',
 });
 
 /**
@@ -36,11 +34,11 @@ function saveFile(bucket, file, mimetype) {
   const destname = randomFileName(mimetype);
   return new Promise((resolve, reject) => {
     client.putObject(bucket, destname, file, (err, etag) => {
-			if (err) {
-				reject(err);
-			}
-			resolve(destname);
-		});
+      if (err) {
+        reject(err);
+      }
+      resolve(destname);
+    });
   });
 }
 
