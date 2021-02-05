@@ -14,7 +14,7 @@ const client = new Client({
   port: 9000,
   useSSL: false,
   accessKey: 'local-minio',
-  secretKey: 'local-test-secret',
+  secretKey: 'pass-minio',
 });
 
 function randomFileName(mimetype) {
