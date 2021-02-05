@@ -60,32 +60,22 @@ async function writeDataTask(data) {
 }
 
 async function doneDataTask(data){
-  console.log(data);
-  const taskDone = await task.findByPk(data);
-  const taskDoneRapi = JSON.stringify(taskDone);
-  console.log(taskDone);
-  console.log({ taskDone });
-  await task.update({ id:taskDone.id });
-  // models.Address.update({
-  //   city: city,
-  //   zip_code: zip_code,
-  //   street: street
-  // }, {
-  //   where: {
-  //     id: id
-  //   }
-  // })
-  //   .then(() => {
-  //     view.messageSuccess(`Data with id ${id} success to updated`);
-  //   })
-  //   .catch(err => {
-  //     view.messageErr(err.message);
-  //   });
+  await task.update(
+    {
+      done: true,
+    },
+    {
+      where: {
+        id: data,
+      },
+    }
+  );
+  return await task.findByPk(data);
 }
+
 // async function removeDataTask(data) {
 //   return task.findOne({ where: { id: data } });
 // }
-
 
 module.exports = {
   init,

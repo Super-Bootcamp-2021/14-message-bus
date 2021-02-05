@@ -40,7 +40,7 @@ async function router(req, res) {
         }
         break;
       case '/done-task':
-        if (req.method === 'POST') {
+        if (req.method === 'GET') {
           return doneTsk(req, res);
         } else {
           respond(404);

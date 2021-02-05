@@ -8,8 +8,6 @@ const {
   ERROR_WORKER_NOT_FOUND,
 } = require('../lib/orm');
 const { saveFile } = require('../lib/storage');
-// eslint-disable-next-line no-unused-vars
-const { IncomingMessage, ServerResponse } = require('http');
 
 function createTsk(req, res) {
   const busboy = new Busboy({ headers: req.headers });
@@ -98,10 +96,10 @@ async function doneTsk(req, res) {
     return;
   }
   try {
-    const worker = await doneDataTask(id);
+    const tasks = await doneDataTask(id);
     res.setHeader('content-type', 'application/json');
     res.statusCode = 200;
-    res.write(JSON.stringify(worker));
+    res.write(JSON.stringify(tasks));
     res.end();
   } catch (err) {
     if (err === ERROR_WORKER_NOT_FOUND) {

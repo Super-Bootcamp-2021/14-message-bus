@@ -9,8 +9,6 @@ const {
   ERROR_WORKER_NOT_FOUND,
 } = require('../lib/orm');
 const { saveFile } = require('../lib/storage');
-// eslint-disable-next-line no-unused-vars
-const { IncomingMessage, ServerResponse } = require('http');
 
 function registerSvc(req, res) {
   const busboy = new Busboy({ headers: req.headers });
