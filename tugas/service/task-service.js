@@ -1,6 +1,7 @@
 const Busboy = require('busboy');
 const url = require('url');
-const { register, taskSelesai, taskBatal, ERROR_REGISTER_DATA_INVALID, list } = require('./task-logic');
+const { register, taskSelesai, taskBatal, ERROR_REGISTER_DATA_INVALID, list, ERROR_WORKER_NOT_FOUND,
+  ERROR_TASK_NOT_FOUND } = require('./task-logic');
 const { upload } = require('../database/typeorm/storage');
 const { loggingMsg } = require('./performance-service')
 
@@ -40,16 +41,20 @@ function storeTaskService(req, res) {
     try {
       const task = await register(data);
       await res.write(JSON.stringify(task));
+      loggingMsg('totalTasks', res.statusCode);
+      await res.end();
     } catch (err) {
       if (err === ERROR_REGISTER_DATA_INVALID) {
         res.statusCode = 401;
-      } else {
+      } else if (err === ERROR_WORKER_NOT_FOUND) {
+        res.statusCode = 204;
+      }else {
         res.statusCode = 500;
       }
-      res.write(err);
+      await res.write(err);
+      loggingMsg('totalTasks', res.statusCode);
+      await res.end();
     }
-    loggingMsg('totalTasks', res.statusCode);
-    await res.end();
   });
 
   req.on('aborted', abort);
@@ -75,7 +80,7 @@ async function upTaskService(req, res) {
     loggingMsg('finish', res.statusCode);
     res.end();
   } catch (err) {
-    if (err === ERROR_WORKER_NOT_FOUND) {
+    if (err === ERROR_TASK_NOT_FOUND) {
       res.statusCode = 404;
       res.write(err);
       loggingMsg('finish', res.statusCode);
@@ -106,7 +111,7 @@ async function softDeleteTaskService(req, res) {
     loggingMsg('cancel', res.statusCode);
     res.end();
   } catch (err) {
-    if (err === ERROR_WORKER_NOT_FOUND) {
+    if (err === ERROR_TASK_NOT_FOUND) {
       res.statusCode = 404;
       res.write(err);
       loggingMsg('cancel', res.statusCode);

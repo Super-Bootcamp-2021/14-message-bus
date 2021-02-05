@@ -63,15 +63,23 @@ async function deleteDataDB(con, id) {
     .createQueryBuilder()
     .delete()
     .from(Worker)
-    .where("id = :id", { id: 1 })
+    .where("id = :id", { id: id })
     .execute();
   return worker;
 }
-async function getoneDB(id) {
+async function getoneWorker(id) {
   const worker = getConnection()
     .getRepository(Worker)
     .createQueryBuilder('worker')
     .where('worker.id = :id', { id: id })
+    .getOne();
+  return worker;
+}
+async function getonetask(id) {
+  const worker = getConnection()
+    .getRepository(Task)
+    .createQueryBuilder('task')
+    .where('task.id = :id', { id: id })
     .getOne();
   return worker;
 }
@@ -159,5 +167,6 @@ module.exports = {
   deleteData,
   updateData,
   readDataWorkerDB,
-  getoneDB,
+  getoneWorker,
+  getonetask
 };
