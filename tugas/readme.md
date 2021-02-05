@@ -13,3 +13,9 @@ Tambahkan Performance Service pada aplikasi yang sudah dibuat sebelumnya
 2. object storage
     menggunakan minio untuk upload file
     - ganti file system ke object storage
+
+Data yang diinginkan
+- total pekerja
+- total tugas
+- total tugas yang selesai
+- total tugas yang dibatalkan
