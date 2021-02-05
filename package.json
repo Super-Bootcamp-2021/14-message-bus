@@ -25,6 +25,9 @@
     "mime-types": "^2.1.28",
     "minio": "^7.0.18",
     "nats": "^1.4.12",
-    "nodemon": "^2.0.7"
+    "nodemon": "^2.0.7",
+    "mariadb": "^2.5.2",
+    "mysql": "^2.18.1",
+    "sequelize": "^6.5.0"
   }
 }
