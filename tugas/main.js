@@ -1,5 +1,5 @@
 const { connect } = require('./lib/orm');
-const workerServer = require('./worker/server');
+const server = require('./server/server');
 
 /**
  * intiate database and other stroage dependency
@@ -7,11 +7,12 @@ const workerServer = require('./worker/server');
 async function init() {
   try {
     console.log('connect to database');
-    await connect('sanbercode2', 'postgres', 'postgres', {
+    await connect('erbium', 'root', '', {
       host: 'localhost',
-      port: 5432,
-      dialect: 'postgres',
+      port: 3306,
+      dialect: 'mysql',
       logging: false,
+      ssl: true,
     });
     console.log('database connected');
   } catch (err) {
@@ -26,17 +27,12 @@ async function init() {
  * @returns {Promise<void>}
  */
 async function main(command) {
-  switch (command) {
-    case 'task':
-      // TODO: implement task service
-      break;
-    case 'worker':
-      await init();
-      workerServer.run();
-      break;
-    default:
-      console.log(`${command} 5tidak dikenali`);
-      console.log('command yang valid: task, worker');
+  if (command) {
+    await init();
+    server.run();
+  } else {
+    console.log(`${command} 5tidak dikenali`);
+    console.log('command yang valid: task, worker');
   }
 }
 
