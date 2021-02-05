@@ -7,7 +7,8 @@
     "test": "nyc mocha",
     "start": "node .",
     "dev": "nodemon .",
-    "lint": "eslint ."
+    "lint": "eslint .",
+    "migrate": "node ./tugas/db/migrations/main.js"
   },
   "author": "",
   "license": "ISC",
@@ -22,9 +23,22 @@
   },
   "dependencies": {
     "busboy": "^0.3.1",
+    "chai-http": "^4.3.0",
+    "dotenv": "^8.2.0",
+    "mariadb": "^2.5.2",
     "mime-types": "^2.1.28",
     "minio": "^7.0.18",
+    "mysql": "^2.18.1",
     "nats": "^1.4.12",
-    "nodemon": "^2.0.7"
+    "nodemon": "^2.0.7",
+    "pg": "^8.5.1",
+    "pg-cursor": "^2.5.2",
+    "pg-hstore": "^2.3.3",
+    "redis": "^3.0.2",
+    "rxjs": "^6.6.3",
+    "sequelize": "^6.5.0",
+    "sinon": "^9.2.3",
+    "sqlite3": "^5.0.1",
+    "typeorm": "^0.2.30"
   }
 }
