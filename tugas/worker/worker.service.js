@@ -2,29 +2,25 @@ const Busboy = require('busboy');
 const url = require('url');
 const { Writable } = require('stream');
 const {
-  register,
-  list,
-  remove,
+  writeData,
+  readData,
+  removeData,
   ERROR_REGISTER_DATA_INVALID,
   ERROR_WORKER_NOT_FOUND,
-} = require('./worker');
+} = require('../lib/orm');
 const { saveFile } = require('../lib/storage');
 // eslint-disable-next-line no-unused-vars
 const { IncomingMessage, ServerResponse } = require('http');
 
-/**
- * service to register new worker
- * @param {IncomingMessage} req
- * @param {ServerResponse} res
- */
 function registerSvc(req, res) {
   const busboy = new Busboy({ headers: req.headers });
 
   const data = {
     name: '',
-    age: 0,
-    bio: '',
     address: '',
+    phone: '',
+    email: '',
+    bio: '',
     photo: '',
   };
 
@@ -48,9 +44,9 @@ function registerSvc(req, res) {
         }
         if (finished) {
           try {
-            const worker = await register(data);
+            await writeData(data);
             res.setHeader('content-type', 'application/json');
-            res.write(JSON.stringify(worker));
+            res.write(JSON.stringify(data));
           } catch (err) {
             if (err === ERROR_REGISTER_DATA_INVALID) {
               res.statusCode = 401;
@@ -74,7 +70,7 @@ function registerSvc(req, res) {
   });
 
   busboy.on('field', (fieldname, val) => {
-    if (['name', 'age', 'bio', 'address'].includes(fieldname)) {
+    if (['name', 'address', 'email', 'phone', 'bio'].includes(fieldname)) {
       data[fieldname] = val;
     }
   });
@@ -89,14 +85,9 @@ function registerSvc(req, res) {
   req.pipe(busboy);
 }
 
-/**
- * service to get list of workers
- * @param {IncomingMessage} req
- * @param {ServerResponse} res
- */
 async function listSvc(req, res) {
   try {
-    const workers = await list();
+    const workers = await readData();
     res.setHeader('content-type', 'application/json');
     res.write(JSON.stringify(workers));
     res.end();
@@ -107,11 +98,6 @@ async function listSvc(req, res) {
   }
 }
 
-/**
- * service to remove a worker by it's id
- * @param {IncomingMessage} req
- * @param {ServerResponse} res
- */
 async function removeSvc(req, res) {
   const uri = url.parse(req.url, true);
   const id = uri.query['id'];
@@ -122,7 +108,7 @@ async function removeSvc(req, res) {
     return;
   }
   try {
-    const worker = await remove(id);
+    const worker = await removeData(id);
     res.setHeader('content-type', 'application/json');
     res.statusCode = 200;
     res.write(JSON.stringify(worker));

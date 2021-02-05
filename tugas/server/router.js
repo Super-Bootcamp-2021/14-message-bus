@@ -1,11 +1,6 @@
 const url = require('url');
 const { listSvc, registerSvc, removeSvc } = require('../worker/worker.service');
-const {
-  createTsk,
-  updateTsk,
-  doneTsk,
-  cancelTsk,
-} = require('../tasks/tasks.service');
+const { createTsk, doneTsk, cancelTsk } = require('../tasks/tasks.service');
 
 async function router(req, res) {
   function respond(statusCode, message) {
@@ -40,13 +35,6 @@ async function router(req, res) {
       case '/create-task':
         if (req.method === 'POST') {
           return createTsk(req, res);
-        } else {
-          respond(404);
-        }
-        break;
-      case '/update-task':
-        if (req.method === 'POST') {
-          return updateTsk(req, res);
         } else {
           respond(404);
         }

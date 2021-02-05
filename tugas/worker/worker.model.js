@@ -1,24 +1,41 @@
 const { DataTypes } = require('sequelize');
 
-exports.model;
-
-exports.defineModel = function (orm) {
-  exports.model = orm.define(
+function defineWorker(orm) {
+  return orm.define(
     'worker',
     {
       name: {
         type: DataTypes.STRING(255),
         allowNull: false,
       },
-      age: DataTypes.INTEGER,
-      bio: DataTypes.TEXT,
-      address: DataTypes.TEXT,
+      address: {
+        type: DataTypes.STRING(255),
+        allowNull: false,
+      },
+      email: {
+        type: DataTypes.STRING(255),
+        allowNull: false,
+      },
+      phone: {
+        type: DataTypes.STRING(255),
+        allowNull: false,
+      },
+      bio: {
+        type: DataTypes.STRING(255),
+        allowNull: false,
+      },
       photo: {
         type: DataTypes.STRING(255),
+        allowNull: false,
       },
     },
     {
+      timestamps: false,
       tableName: 'workers',
     }
   );
+}
+
+module.exports = {
+  defineWorker,
 };

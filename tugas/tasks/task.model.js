@@ -1,20 +1,26 @@
 const { DataTypes } = require('sequelize');
 
-exports.model;
-
-exports.defineModel = function (orm) {
-  exports.model = orm.define(
+function defineTask(orm) {
+  return orm.define(
     'task',
     {
-      job: DataTypes.TEXT,
+      job: {
+        type: DataTypes.TEXT,
+        allowNull: false,
+      },
       assigneeId: {
         type: DataTypes.INTEGER,
-        references: {
-          model: exports.worker,
-          key: 'id',
-        },
+        allowNull: false,
+      },
+      attachment: {
+        type: DataTypes.TEXT,
+        allowNull: true,
       },
       done: {
+        type: DataTypes.BOOLEAN,
+        defaultValue: false,
+      },
+      cancel: {
         type: DataTypes.BOOLEAN,
         defaultValue: false,
       },
@@ -27,7 +33,10 @@ exports.defineModel = function (orm) {
     {
       timestamps: false,
       tableName: 'tasks',
-      underscored: true,
     }
   );
+}
+
+module.exports = {
+  defineTask,
 };
