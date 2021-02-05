@@ -1,14 +1,13 @@
 const CONFIG = {
   DB_CONFIG: {
     host: 'localhost',
-    port: 3306,
-    dialect: 'mysql',
+    port: 5432,
+    dialect: 'postgres',
     logging: false,
-    ssl: true,
   },
-  DATABASE: 'erbium',
-  USERNAME: 'root',
-  PASSWORD: '',
+  DATABASE: 'test',
+  USERNAME: 'postgres',
+  PASSWORD: 'stratosfer10110100',
 };
 
 exports.CONFIG = CONFIG;

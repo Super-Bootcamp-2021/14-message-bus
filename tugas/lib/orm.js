@@ -33,6 +33,7 @@ async function init() {
 
 async function writeData(data) {
   await worker.create(data);
+  return data
 }
 
 async function removeData(data) {

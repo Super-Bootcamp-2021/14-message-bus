@@ -1,6 +1,7 @@
 const Busboy = require('busboy');
 const url = require('url');
 const { Writable } = require('stream');
+const { messageClient } = require('../message-bus/client')
 const {
   writeData,
   readData,
@@ -9,6 +10,8 @@ const {
   ERROR_WORKER_NOT_FOUND,
 } = require('../lib/orm');
 const { saveFile } = require('../lib/storage');
+// eslint-disable-next-line no-unused-vars
+const { IncomingMessage, ServerResponse } = require('http');
 
 function registerSvc(req, res) {
   const busboy = new Busboy({ headers: req.headers });
@@ -42,9 +45,10 @@ function registerSvc(req, res) {
         }
         if (finished) {
           try {
-            await writeData(data);
+            const worker =  await writeData(data);
+            await messageClient.publish('performance.worker', JSON.stringify(worker))
             res.setHeader('content-type', 'application/json');
-            res.write(JSON.stringify(data));
+            res.write(JSON.stringify(worker));
           } catch (err) {
             if (err === ERROR_REGISTER_DATA_INVALID) {
               res.statusCode = 401;
@@ -86,6 +90,7 @@ function registerSvc(req, res) {
 async function listSvc(req, res) {
   try {
     const workers = await readData();
+    messageClient.publish('performance.worker.list', JSON.stringify(worker))
     res.setHeader('content-type', 'application/json');
     res.write(JSON.stringify(workers));
     res.end();
@@ -107,6 +112,7 @@ async function removeSvc(req, res) {
   }
   try {
     const worker = await removeData(id);
+    messageClient.publish('performance.worker', JSON.stringify(worker))
     res.setHeader('content-type', 'application/json');
     res.statusCode = 200;
     res.write(JSON.stringify(worker));
