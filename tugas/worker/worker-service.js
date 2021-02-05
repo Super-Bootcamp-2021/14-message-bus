@@ -4,6 +4,7 @@ const { Writable } = require('stream');
 const { saveFile } = require('../lib/minio');
 const { writeWorker, readWorker, deleteWorker } = require('./worker');
 const { streamer } = require('../lib/nats');
+const { saveWorkerAdded } = require('../performance/performance');
 
 async function writeWorkerService(req, res) {
   const busboy = new Busboy({ headers: req.headers });
@@ -31,8 +32,10 @@ async function writeWorkerService(req, res) {
 
           if (finished) {
             const reg = await writeWorker(obj);
+            const total = JSON.parse(await readWorker());
+            saveWorkerAdded();
+            streamer('worker.added', total.length.toString());
             res.write(reg);
-            streamer('worker', reg);
             res.end();
           }
         }

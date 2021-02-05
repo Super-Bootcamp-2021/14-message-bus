@@ -17,7 +17,7 @@ function connect() {
 
 function save(db, data) {
   const setAsync = promisify(client.set).bind(client);
-  return setAsync(db, JSON.stringify(data));
+  return setAsync(db, data);
 }
 
 async function read(db) {

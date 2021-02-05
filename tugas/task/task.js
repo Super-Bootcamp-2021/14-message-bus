@@ -17,6 +17,24 @@ async function readTask() {
   return JSON.stringify(jobs);
 }
 
+async function readTaskDone() {
+  const task = getConnection().getRepository('Task');
+  let jobs = await task.find({
+    where: { done: true },
+    relations: ['assignee'],
+  });
+  return JSON.stringify(jobs);
+}
+
+async function readTaskCancelled() {
+  const task = getConnection().getRepository('Task');
+  let jobs = await task.find({
+    where: { cancel: true },
+    relations: ['assignee'],
+  });
+  return JSON.stringify(jobs);
+}
+
 async function updateTask(data, id) {
   await getConnection()
     .createQueryBuilder()
@@ -30,4 +48,6 @@ module.exports = {
   writeTask,
   readTask,
   updateTask,
+  readTaskDone,
+  readTaskCancelled,
 };

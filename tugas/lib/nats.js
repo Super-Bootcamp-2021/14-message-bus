@@ -22,8 +22,10 @@ function streamer(subject, message) {
 }
 
 function subscriber(subject) {
-  const sub = client.subscribe(subject, (msg) => {
-    console.log(msg);
+  return new Promise((resolve) => {
+    client.subscribe(subject, (msg) => {
+      resolve(msg);
+    });
   });
 }
 

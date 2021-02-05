@@ -1,8 +1,19 @@
 const Busboy = require('busboy');
 const { Writable } = require('stream');
 const { saveFile } = require('../lib/minio');
-const { writeTask, updateTask, readTask } = require('./task');
+const {
+  writeTask,
+  updateTask,
+  readTask,
+  readTaskDone,
+  readTaskCancelled,
+} = require('./task');
 const { streamer } = require('../lib/nats');
+const {
+  saveTaskAdded,
+  saveTaskDone,
+  saveTaskCancelled,
+} = require('../performance/performance');
 
 async function addTaskService(req, res) {
   const busboy = new Busboy({ headers: req.headers });
@@ -30,8 +41,10 @@ async function addTaskService(req, res) {
 
           if (finished) {
             const add = await writeTask(obj);
+            const total = JSON.parse(await readTask());
+            saveTaskAdded();
+            streamer('task.added', total.length.toString());
             res.write(add);
-            streamer('task', add);
             res.end();
           }
         }
@@ -79,6 +92,9 @@ async function finishTaskService(req, res) {
 
   busboy.on('finish', async () => {
     await updateTask({ done: true }, id);
+    const done = JSON.parse(await readTaskDone());
+    saveTaskDone();
+    streamer('task.done', done.length.toString());
     res.statusCode = 200;
     res.write(`pekerjaan dengan id ${id} berhasil diselesaikan`);
     res.end();
@@ -108,6 +124,9 @@ async function cancelTaskService(req, res) {
 
   busboy.on('finish', async () => {
     await updateTask({ cancel: true }, id);
+    const cancel = JSON.parse(await readTaskCancelled());
+    saveTaskCancelled();
+    streamer('task.cancelled', cancel.length.toString());
     res.statusCode = 200;
     res.write(`pekerjaan ${id} telah dibatalkan`);
     res.end();
