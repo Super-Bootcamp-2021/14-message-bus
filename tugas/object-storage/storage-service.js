@@ -71,9 +71,7 @@ function uploadService(req, res) {
         });
         
         busboy.on('finish', () => {
-            resolve(nama_file);
-            // res.write(nama_file);
-            // res.end();
+            resolve(nama_file);            
         });
 
         req.on('aborted', abort);
@@ -119,30 +117,24 @@ async function readService(req, res) {
   }
 }
 
-async function deleteService(req, res) {
+async function deleteService(req) {
     const uri = url.parse(req.url, true);
     const objectName = uri.pathname.replace('/delete/', '');
-    if (!objectName) {
-        res.statusCode = 400;
-        res.write('request tidak sesuai');
-        res.end();
+  
+    try {
+        await client.statObject('photo', objectName);            
+    } catch (err) {
+        if (err && err.code === 'NotFound') {
+            return false;
+        }
+        throw new Error('gagal membaca file');      
     }
 
     try {
         await client.removeObject('photo', objectName);
-        res.write(`file ${objectName} telah dihapus`);
-        res.end();
+        return true;
     } catch (err) {
-        if (err && err.code === 'NotFound') {
-            res.statusCode = 404;
-            res.write(`file ${objectName} tidak ditemukan`);
-            res.end();
-            return;
-        }
-        res.statusCode = 500;
-        res.write('gagal membaca file');
-        res.end();
-        return;
+        throw new Error(`file ${objectName} tidak ditemukan`)        
     }
 }
 

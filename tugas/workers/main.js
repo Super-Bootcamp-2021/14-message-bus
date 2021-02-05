@@ -3,8 +3,7 @@ const url = require('url');
 
 const { stdout } = require('process');
 const {
-   uploadService,
-   readService,
+   uploadService,   
    deleteService
 } = require("../object-storage/storage-service");
 
@@ -49,23 +48,7 @@ const server = createServer(async (req, res) => {
          } else {
          respond();
          }
-         break;
-
-      case /^\/update\/worker/.test(uri.pathname):
-         if (method === 'GET') {
-            let data = {
-               id: 20,
-               nama: 'junior',
-               email: 'junior@mail.com',
-               telepon: '097848',
-               alamat: 'bangkalan',
-               biografi: 'ini biografi'
-            };
-            message = 'await updateWorker(data)';
-         } else {
-            respond();
-         }
-         break;
+         break;      
 
       case /^\/read\/worker/.test(uri.pathname):
          if (method === 'GET') {
@@ -76,9 +59,11 @@ const server = createServer(async (req, res) => {
          }
          break;
          
-      case /^\/delete\/worker/.test(uri.pathname):
+      case /^\/delete\/\w+/.test(uri.pathname):
          if (method === 'GET') {
-            message = "await deleteWorker(uri.query['id'])";
+            message = await deleteService(req);
+            res.write(message.toString());            
+            res.end();
          } else {
             message = 'Method tidak tersedia';
          }
