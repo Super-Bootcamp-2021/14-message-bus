@@ -17,6 +17,7 @@ function createSvc(req, res) {
     attachment: '',
     done: '',
     cancel: '',
+    assigneeId: null,
   };
 
   let finished = false;
@@ -65,7 +66,7 @@ function createSvc(req, res) {
   });
 
   busboy.on('field', async (fieldname, val) => {
-    if (['job', 'done', 'cancel'].includes(fieldname)) {
+    if (['job', 'done', 'cancel', 'assigneeId'].includes(fieldname)) {
       data[fieldname] = val;
     }
   });
@@ -136,7 +137,7 @@ function updateSvc(req, res) {
   });
 
   busboy.on('field', async (fieldname, val) => {
-    if (['job', 'done', 'cancel', 'id'].includes(fieldname)) {
+    if (['job', 'done', 'cancel', 'id', 'assigneeId'].includes(fieldname)) {
       data[fieldname] = val;
     }
   });

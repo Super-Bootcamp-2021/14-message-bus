@@ -1,21 +1,24 @@
-const http = require("http");
+const http = require('http');
 
 const PORT = 6000;
 
-function createTask(data) {  
+function createTask(data) {
   return new Promise((resolve, reject) => {
-    const req = http.request(`http://localhost:${PORT}/task/write?data=${JSON.stringify(data)}`, (res) => {
-      let data = "";
-      res.on("data", (chunk) => {
-        data += chunk.toString();
-      });
-      res.on("end", () => {        
-        resolve(data);
-      });
-      res.on("error", (err) => {
-        reject(err);
-      });
-    });
+    const req = http.request(
+      `http://localhost:${PORT}/task/write?data=${JSON.stringify(data)}`,
+      (res) => {
+        let data = '';
+        res.on('data', (chunk) => {
+          data += chunk.toString();
+        });
+        res.on('end', () => {
+          resolve(data);
+        });
+        res.on('error', (err) => {
+          reject(err);
+        });
+      }
+    );
     req.end();
   });
 }
@@ -24,38 +27,44 @@ function createTask(data) {
 
 function updateTask(data) {
   return new Promise((resolve, reject) => {
-    const req = http.request(`http://localhost:${PORT}/task/update?data=${JSON.stringify(data)}`, (res) => {
-      let data = "";
-      res.on("data", (chunk) => {
-        data += chunk.toString();
-      });
-      res.on("end", () => {        
-        resolve(data);
-      });
-      res.on("error", (err) => {
-        reject(err);
-      });
-    });
+    const req = http.request(
+      `http://localhost:${PORT}/task/update?data=${JSON.stringify(data)}`,
+      (res) => {
+        let data = '';
+        res.on('data', (chunk) => {
+          data += chunk.toString();
+        });
+        res.on('end', () => {
+          resolve(data);
+        });
+        res.on('error', (err) => {
+          reject(err);
+        });
+      }
+    );
     req.end();
   });
 }
 
 //updateTask({id: 1, job: 'bermain', attachment: 'file.jpg', done: true});
 
-function cancelTask(id) {
+function cancelTask(data) {
   return new Promise((resolve, reject) => {
-    const req = http.request(`http://localhost:${PORT}/task/delete?id=${id}`, (res) => {
-      let data = "";
-      res.on("data", (chunk) => {
-        data += chunk.toString();
-      });
-      res.on("end", () => {        
-        resolve(data);
-      });
-      res.on("error", (err) => {
-        reject(err);
-      });
-    });
+    const req = http.request(
+      `http://localhost:${PORT}/task/cancel?data=${JSON.stringify(data)}`,
+      (res) => {
+        let data = '';
+        res.on('data', (chunk) => {
+          data += chunk.toString();
+        });
+        res.on('end', () => {
+          resolve(data);
+        });
+        res.on('error', (err) => {
+          reject(err);
+        });
+      }
+    );
     req.end();
   });
 }
@@ -64,26 +73,28 @@ function cancelTask(id) {
 
 function doneTask(data) {
   return new Promise((resolve, reject) => {
-    const req = http.request(`http://localhost:${PORT}/task/done?data=${JSON.stringify(data)}`, (res) => {
-      let data = "";
-      res.on("data", (chunk) => {
-        data += chunk.toString();
-      });
-      res.on("end", () => {        
-        resolve(data);
-      });
-      res.on("error", (err) => {
-        reject(err);
-      });
-    });
+    const req = http.request(
+      `http://localhost:${PORT}/task/done?data=${JSON.stringify(data)}`,
+      (res) => {
+        let data = '';
+        res.on('data', (chunk) => {
+          data += chunk.toString();
+        });
+        res.on('end', () => {
+          resolve(data);
+        });
+        res.on('error', (err) => {
+          reject(err);
+        });
+      }
+    );
     req.end();
   });
 }
 
-//doneTask({ id: 4, done: false })
 module.exports = {
   createTask,
   updateTask,
   cancelTask,
-  doneTask
-}
+  doneTask,
+};
