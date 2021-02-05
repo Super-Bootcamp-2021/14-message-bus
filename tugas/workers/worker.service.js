@@ -9,6 +9,14 @@ const {
   ERROR_WORKER_NOT_FOUND,
 } = require('./worker');
 const { saveFile } = require('../lib/storage');
+const {
+  registerErrorLog,
+	registerSuccessLog,
+  listErrorLog,
+	listSuccessLog,
+  removeErrorLog,
+	removeSuccessLog,
+} = require('./worker.nats');
 
 function registerSvc(req, res) {
   const busboy = new Busboy({ headers: req.headers });
@@ -43,6 +51,7 @@ function registerSvc(req, res) {
         if (finished) {
           try {
             const worker = await register(data);
+						await registerSuccessLog(worker);
             res.setHeader('content-type', 'application/json');
             res.write(JSON.stringify(worker));
           } catch (err) {
@@ -51,6 +60,7 @@ function registerSvc(req, res) {
             } else {
               res.statusCode = 500;
             }
+						await registerErrorLog(err);
             res.write(err);
           }
           res.end();
@@ -88,10 +98,12 @@ function registerSvc(req, res) {
 async function listSvc(req, res) {
   try {
     const workers = await list();
+		await listSuccessLog(workers);
     res.setHeader('content-type', 'application/json');
     res.write(JSON.stringify(workers));
     res.end();
   } catch (err) {
+		await listErrorLog(err);
     res.statusCode = 500;
     res.end();
     return;
@@ -102,18 +114,22 @@ async function removeSvc(req, res) {
   const uri = url.parse(req.url, true);
   const id = uri.query['id'];
   if (!id) {
-    res.statusCode = 401;
-    res.write('parameter id tidak ditemukan');
+		const ERROR_ID_NOT_FOUND = 'parameter id tidak ditemukan';
+    await removeErrorLog(ERROR_ID_NOT_FOUND);
+		res.statusCode = 401;
+    res.write(ERROR_ID_NOT_FOUND);
     res.end();
     return;
   }
   try {
     const worker = await remove(parseInt(id));
+		await removeSuccessLog(worker);
     res.setHeader('content-type', 'application/json');
     res.statusCode = 200;
     res.write(JSON.stringify(worker));
     res.end();
   } catch (err) {
+		await removeErrorLog(err);
     if (err === ERROR_WORKER_NOT_FOUND) {
       res.statusCode = 404;
       res.write(err);
