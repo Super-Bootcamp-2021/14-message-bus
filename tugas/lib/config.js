@@ -1,13 +1,13 @@
 const CONFIG = {
   DB_CONFIG: {
     host: 'localhost',
-    port: 5432,
-    dialect: 'postgres',
+    port: 3306,
+    dialect: 'mysql',
     logging: false,
   },
-  DATABASE: 'test',
-  USERNAME: 'postgres',
-  PASSWORD: 'stratosfer10110100',
+  DATABASE: 'erdium',
+  USERNAME: 'root',
+  PASSWORD: '',
 };
 
 exports.CONFIG = CONFIG;

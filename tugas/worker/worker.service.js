@@ -1,7 +1,7 @@
 const Busboy = require('busboy');
 const url = require('url');
 const { Writable } = require('stream');
-const { messageClient } = require('../message-bus/client')
+const { messageClient } = require('../message-bus/client');
 const {
   writeData,
   readData,
@@ -45,8 +45,11 @@ function registerSvc(req, res) {
         }
         if (finished) {
           try {
-            const worker =  await writeData(data);
-            await messageClient.publish('performance.worker', JSON.stringify(worker))
+            const worker = await writeData(data);
+            await messageClient.publish(
+              'performance.worker',
+              JSON.stringify(worker)
+            );
             res.setHeader('content-type', 'application/json');
             res.write(JSON.stringify(worker));
           } catch (err) {
@@ -90,7 +93,7 @@ function registerSvc(req, res) {
 async function listSvc(req, res) {
   try {
     const workers = await readData();
-    messageClient.publish('performance.worker.list', JSON.stringify(worker))
+    messageClient.publish('performance.worker.list', JSON.stringify(workers));
     res.setHeader('content-type', 'application/json');
     res.write(JSON.stringify(workers));
     res.end();
@@ -112,7 +115,7 @@ async function removeSvc(req, res) {
   }
   try {
     const worker = await removeData(id);
-    messageClient.publish('performance.worker', JSON.stringify(worker))
+    messageClient.publish('performance.worker', JSON.stringify(worker));
     res.setHeader('content-type', 'application/json');
     res.statusCode = 200;
     res.write(JSON.stringify(worker));
