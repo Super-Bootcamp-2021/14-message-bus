@@ -2,7 +2,7 @@
 
 Tambahkan Performance Service pada aplikasi yang sudah dibuat sebelumnya
 
-![service diagram](tugas-besar-task system.png)
+![service diagram](tugas-besar-task-system.png)
 
 1. performance service
     menyediakan informasi mengenai transaksi yang dilakukan
@@ -17,3 +17,4 @@ Data yang diinginkan
 2. object storage
     menggunakan minio untuk upload file
     - ganti file system ke object storage
+
