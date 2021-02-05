@@ -1,10 +1,11 @@
 const { serve } = require('./lib/server');
 const { connect } = require('./lib/orm');
 const kv = require('./lib/kv');
+const mb = require('./lib/nats');
 const { WorkerSchema } = require('./worker/worker-model');
 const { TaskSchema } = require('./task/task-model');
 
-async function init() {
+async function initKV() {
   try {
     console.log('connect to KV service...');
     await kv.connect();
@@ -13,6 +14,9 @@ async function init() {
     console.error('KV connection failed');
     return;
   }
+}
+
+async function initDB() {
   try {
     console.log('connect to database');
     await connect([WorkerSchema, TaskSchema], {
@@ -30,8 +34,21 @@ async function init() {
   }
 }
 
+async function initMB() {
+  try {
+    console.log('connect to Message Bus service...');
+    await mb.connect();
+    console.log('Message Bus connected');
+  } catch (err) {
+    console.error('Message Bus connection failed');
+    return;
+  }
+}
+
 async function main() {
-  await init();
+  await initDB();
+  await initKV();
+  await initMB();
   serve();
 }
 

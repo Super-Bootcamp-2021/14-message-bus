@@ -9,7 +9,7 @@ function connect() {
       resolve();
     });
 
-    client.on('close', (err) => {
+    client.on('error', (err) => {
       if (err) {
         reject(err);
       }
