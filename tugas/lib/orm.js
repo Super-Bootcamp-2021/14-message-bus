@@ -4,7 +4,7 @@ const { defineTask } = require('../tasks/task.model');
 const { defineWorker } = require('../worker/worker.model');
 
 const ERROR_REGISTER_DATA_INVALID = 'data tidak lengkap';
-const ERROR_WORKER_NOT_FOUND = 'data tidak ditemukan';
+const ERROR_DATA_NOT_FOUND = 'data tidak ditemukan';
 
 exports.orm;
 let task, worker;
@@ -38,7 +38,7 @@ async function writeData(data) {
 async function removeData(data) {
   const workDel = await worker.findByPk(data);
   if (!workDel) {
-    throw ERROR_WORKER_NOT_FOUND;
+    throw ERROR_DATA_NOT_FOUND;
   }
   await workDel.destroy();
   return workDel;
@@ -48,18 +48,13 @@ async function readData() {
   const { count, rows } = await worker.findAndCountAll();
   return { count, rows };
 }
-// async function updateTask(data) {
-//   const instance = task.findOne({ where: { id: data.id } });
-//   instance.job = data.job;
-//   await instance.save();
-// }
-// ``;
+
 async function writeDataTask(data) {
   console.log(data);
   await task.create(data);
 }
 
-async function doneDataTask(data){
+async function doneDataTask(data) {
   await task.update(
     {
       done: true,
@@ -73,9 +68,19 @@ async function doneDataTask(data){
   return await task.findByPk(data);
 }
 
-// async function removeDataTask(data) {
-//   return task.findOne({ where: { id: data } });
-// }
+async function cancelDataTask(data){
+  await task.update(
+    {
+      cancel: true,
+    },
+    {
+      where: {
+        id: data,
+      },
+    }
+  );
+  return await task.findByPk(data);
+}
 
 module.exports = {
   init,
@@ -84,6 +89,7 @@ module.exports = {
   removeData,
   writeDataTask,
   doneDataTask,
+  cancelDataTask,
   ERROR_REGISTER_DATA_INVALID,
-  ERROR_WORKER_NOT_FOUND,
+  ERROR_DATA_NOT_FOUND,
 };

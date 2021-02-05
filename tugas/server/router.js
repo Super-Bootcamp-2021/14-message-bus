@@ -47,7 +47,7 @@ async function router(req, res) {
         }
         break;
       case '/cancel-task':
-        if (req.method === 'POST') {
+        if (req.method === 'GET') {
           return cancelTsk(req, res);
         } else {
           respond(404);
