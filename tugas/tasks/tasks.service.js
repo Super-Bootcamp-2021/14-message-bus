@@ -70,9 +70,7 @@ function createTsk(req, res) {
   });
 
   busboy.on('field', (fieldname, val) => {
-    if (
-      ['job', 'assigneeId', 'attachment', 'done', 'cancel'].includes(fieldname)
-    ) {
+    if (['job', 'assigneeId', 'done', 'cancel'].includes(fieldname)) {
       data[fieldname] = val;
       console.log(data);
     }

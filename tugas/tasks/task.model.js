@@ -5,7 +5,7 @@ function defineTask(orm) {
     'task',
     {
       job: {
-        type: DataTypes.TEXT,
+        type: DataTypes.STRING(255),
         allowNull: false,
       },
       assigneeId: {
@@ -13,8 +13,8 @@ function defineTask(orm) {
         allowNull: false,
       },
       attachment: {
-        type: DataTypes.TEXT,
-        allowNull: true,
+        type: DataTypes.STRING(255),
+        allowNull: false,
       },
       done: {
         type: DataTypes.BOOLEAN,
