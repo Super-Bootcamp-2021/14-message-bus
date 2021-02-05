@@ -5,9 +5,11 @@ const fs = require('fs');
 const url = require('url')
 const path = require('path');
 const mime = require('mime-types');
+const nats = require('../../message/nats');
 
 class TaskController {
   static async read(req, res) {
+
     try {
       const result = await listTask();  
       res.statusCode = 200;
@@ -22,7 +24,7 @@ class TaskController {
 
   static create(req, res) {
     const busboy = new Busboy({ headers: req.headers })
-
+    let messageBus;
     let data = {
         assigneeId :'',        
         name: '',
@@ -59,6 +61,11 @@ class TaskController {
                         status: 'success',
                         message: 'success add data',
                     }));
+
+                    messageBus = {
+                      status: 'success',
+                      message: 'success add task',
+                    };
                   } catch (err) {
                     //add error handling
                     // if (err === ERROR_REGISTER_DATA_INVALID) {
@@ -66,9 +73,14 @@ class TaskController {
                     // } else {
                     //   res.statusCode = 500;
                     // }
+                    messageBus = {
+                      status: 'error',
+                      message: 'error add task',
+                    };
                     res.write('401');
                   }
                   res.end();
+                  nats.publish('task.create',messageBus);
                 }
             break;
           default: {
@@ -94,35 +106,55 @@ class TaskController {
 
   static async delete(req, res) {
     const id = +req.params.id;
+    let messageBus;
 
     try {
       const Task = await removeTask(id);
       const output = JSON.stringify({
         msg: `Task with id = ${id} has been deleted.`,
       });
+      messageBus = {
+        status: 'success',
+        message: 'success delete task',
+      };
       res.write(output);
       res.statusCode = 200;
       res.end();
+      nats.publish('task.delete',messageBus)
     } catch (err) {
-      console.log(err);
+      messageBus = {
+        status: 'error',
+        message: 'error delete task',
+      };
       res.statusCode = 500;
       res.end();
+      nats.publish('task.delete',messageBus)
     }
   }
 
   static async completed(req, res) {
     const id = +req.params.id;
+    let messageBus;
     try {
       const result = await completedTask(id)
       res.statusCode = 200;
       res.write(JSON.stringify({
         msg: `Task with id = ${id} has been finished.`,
       }));
+      messageBus = {
+        status: 'success',
+        message: 'success completed task',
+      };
       res.end();
+      nats.publish('task.completed',messageBus)
     } catch (err) {
-      console.log(err);
       res.statusCode = 500;
+      messageBus = {
+        status: 'error',
+        message: 'error completed task',
+      };
       res.end();
+      nats.publish('task.completed',messageBus)
     }
   }
 

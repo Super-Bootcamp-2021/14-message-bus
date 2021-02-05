@@ -6,10 +6,12 @@ const { register, listWorker, removeWorker } = require('../lib/worker');
 const fs = require('fs');
 const path = require('path');
 const mime = require('mime-types');
+const nats = require('../../message/nats');
 
 // save data worker
 function saveWorker(req, res) {
     const busboy = new Busboy({ headers: req.headers })
+    let messageBus;
 
     let data = {        
         name: '',
@@ -49,6 +51,11 @@ function saveWorker(req, res) {
                         status: 'success',
                         message: 'success add data',
                     }));
+
+                    messageBus = {
+                      status: 'success',
+                      message: 'success get data',
+                    };
                   } catch (err) {
                     //add error handling
                     // if (err === ERROR_REGISTER_DATA_INVALID) {
@@ -56,9 +63,14 @@ function saveWorker(req, res) {
                     // } else {
                     //   res.statusCode = 500;
                     // }
+                    messageBus = {
+                      status: 'error',
+                      message: 'error register data',
+                    };
                     res.write('401');
                   }
                   res.end();
+                  nats.publish('worker.register',messageBus);
                 }
             break;
           default: {
@@ -92,36 +104,63 @@ async function getWorker(req, res) {
         message: 'success get data',
         data: data,
     })
+
+
+    const messageBus = {
+      status: 'success',
+      message: 'success get data',
+    };
+
+
     res.setHeader('Content-Type', 'application/json')
     res.statusCode = 200
     res.write(message)
     res.end()
+    nats.publish('worker.get',messageBus);
+    
 }
 
 //detele data worker
 function deleteWorker(req, res) {
     const uri = url.parse(req.url, true)
     const id = uri.pathname.replace('/worker/', '')
+    let messageBus; 
     try {
         const result = removeWorker(id);
         message = JSON.stringify({
             status: 'success',
             message: 'success delete data',
         })
+
+        messageBus = {
+          status: 'success',
+          message: 'success delete data',
+        };
+
         res.setHeader('Content-Type', 'application/json')
         res.statusCode = 200
         res.write(message)
         res.end()
+
+        nats.publish('worker.delete',messageBus);
 
     } catch (error) {
         message = JSON.stringify({
             status: 'error',
             message: error.toString(),
         })
+
+        messageBus = {
+          status: 'error',
+          message: 'error delete data',
+        };
+
         res.setHeader('Content-Type', 'application/json')
         res.statusCode = 400
         res.write(message)
         res.end()
+
+        nats.publish('worker.delete',messageBus);
     }
 }
 
