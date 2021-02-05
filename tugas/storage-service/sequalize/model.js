@@ -14,35 +14,35 @@ const { Sequelize, Model } = require('sequelize');
  * @returns {Model<Worker>}
  */
 function defineWorker(orm) {
-    return orm.define(
-        'worker',
-        {
-            nama: {
-                type: DataTypes.STRING(255),
-                allowNull: true,
-            },
-            email: {
-                type: DataTypes.STRING(25),
-                allowNull: true,
-            },
-            telepon: {
-                type: DataTypes.STRING(12),
-                allowNull: true,
-            },
-            alamat: {
-                type: DataTypes.TEXT,
-                allowNull: true,
-            },
-            biografi: {
-                type: DataTypes.TEXT,
-                allowNull: true,
-            },
-        },
-        {
-            timestamps: false,
-            tableName: 'workers',
-        }
-    );
+  return orm.define(
+    'worker',
+    {
+      nama: {
+        type: DataTypes.STRING(255),
+        allowNull: true,
+      },
+      email: {
+        type: DataTypes.STRING(25),
+        allowNull: true,
+      },
+      telepon: {
+        type: DataTypes.STRING(12),
+        allowNull: true,
+      },
+      alamat: {
+        type: DataTypes.TEXT,
+        allowNull: true,
+      },
+      biografi: {
+        type: DataTypes.TEXT,
+        allowNull: true,
+      },
+    },
+    {
+      timestamps: false,
+      tableName: 'workers',
+    }
+  );
 }
 
 /**
@@ -59,33 +59,33 @@ function defineWorker(orm) {
  * @returns {Model<Task>}
  */
 function defineTask(orm) {
-    return orm.define(
-        'task',
-        {
-            job: DataTypes.TEXT,
-            done: {
-                type: DataTypes.BOOLEAN,
-                defaultValue: false,
-            },
-            attachment: {
-                type: DataTypes.TEXT,
-                defaultValue: true
-            },
-            assignee_id: {
-                type: DataTypes.INTEGER,
-                defaultValue: true
-            },
-            added_at: {
-                type: DataTypes.DATE,
-                allowNull: false,
-                defaultValue: DataTypes.NOW,
-            },
-        },
-        {
-            timestamps: false,
-            tableName: 'tasks',
-        }
-    );
+  return orm.define(
+    'task',
+    {
+      job: DataTypes.TEXT,
+      attachment: {
+        type: DataTypes.TEXT,
+        defaultValue: true,
+      },
+      done: {
+        type: DataTypes.BOOLEAN,
+        defaultValue: false,
+      },
+      cancel: {
+        type: DataTypes.BOOLEAN,
+        defaultValue: false,
+      },
+      added_at: {
+        type: DataTypes.DATE,
+        allowNull: false,
+        defaultValue: DataTypes.NOW,
+      },
+    },
+    {
+      timestamps: false,
+      tableName: 'tasks',
+    }
+  );
 }
 
 module.exports = {
