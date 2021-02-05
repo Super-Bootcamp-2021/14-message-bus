@@ -1,6 +1,12 @@
 const url = require('url');
 const { listSvc, registerSvc, removeSvc } = require('../worker/worker.service');
-const { createTsk, doneTsk, cancelTsk } = require('../tasks/tasks.service');
+const {
+  createTsk,
+  doneTsk,
+  cancelTsk,
+  listTsk,
+  removeTsk,
+} = require('../tasks/tasks.service');
 
 async function router(req, res) {
   function respond(statusCode, message) {
@@ -49,6 +55,20 @@ async function router(req, res) {
       case '/cancel-task':
         if (req.method === 'GET') {
           return cancelTsk(req, res);
+        } else {
+          respond(404);
+        }
+        break;
+      case '/list-task':
+        if (req.method === 'GET') {
+          return listTsk(req, res);
+        } else {
+          respond(404);
+        }
+        break;
+      case '/remove-task':
+        if (req.method === 'DELETE') {
+          return removeTsk(req, res);
         } else {
           respond(404);
         }

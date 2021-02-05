@@ -68,7 +68,7 @@ async function doneDataTask(data) {
   return await task.findByPk(data);
 }
 
-async function cancelDataTask(data){
+async function cancelDataTask(data) {
   await task.update(
     {
       cancel: true,
@@ -82,6 +82,20 @@ async function cancelDataTask(data){
   return await task.findByPk(data);
 }
 
+async function readTask() {
+  const { count, rows } = await task.findAndCountAll();
+  return { count, rows };
+}
+
+async function removeTask(data) {
+  const taskDel = await task.findByPk(data);
+  if (!taskDel) {
+    throw ERROR_DATA_NOT_FOUND;
+  }
+  await taskDel.destroy();
+  return taskDel;
+}
+
 module.exports = {
   init,
   writeData,
@@ -90,6 +104,8 @@ module.exports = {
   writeDataTask,
   doneDataTask,
   cancelDataTask,
+  readTask,
+  removeTask,
   ERROR_REGISTER_DATA_INVALID,
   ERROR_DATA_NOT_FOUND,
 };
