@@ -1,6 +1,13 @@
-const fs = require('fs');
-const path = require('path');
 const mime = require('mime-types');
+const { Client } = require('minio');
+
+const client = new Client({
+  endPoint: '127.0.0.1',
+  port: 9000,
+  useSSL: false,
+  accessKey: 'minioadmin',
+  secretKey: 'minioadmin',
+});
 
 function randomFileName(mimetype) {
   return (
@@ -12,22 +19,17 @@ function randomFileName(mimetype) {
   );
 }
 
-function saveFile(file, mimetype) {
-  const destname = randomFileName(mimetype);
-  const store = fs.createWriteStream(
-    path.resolve(__dirname, `../file-storage/${destname}`)
-  );
-  return new Promise((resolve, reject) => {
-    store.on('finish', () => {
-      resolve(destname);
-    });
-    store.on('error', (err) => {
-      reject(err);
-    });
-    file.pipe(store);
+async function saveFile(file, mimetype, destination, nameFile) {
+  const destname = nameFile;
+  client.putObject(destination, destname, file, (err, etag) => {
+    if (err) {
+      console.log(err);
+    }
+    return etag;
   });
 }
 
 module.exports = {
   saveFile,
+  randomFileName,
 };

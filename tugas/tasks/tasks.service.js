@@ -10,7 +10,23 @@ const {
   ERROR_REGISTER_DATA_INVALID,
   ERROR_DATA_NOT_FOUND,
 } = require('../lib/orm');
-const { saveFile } = require('../lib/storage');
+const { saveFile, randomFileName } = require('../lib/storage');
+
+async function write(res, data) {
+  try {
+    await writeDataTask(data);
+    res.setHeader('content-type', 'application/json');
+    res.write(JSON.stringify(data));
+  } catch (err) {
+    if (err === ERROR_REGISTER_DATA_INVALID) {
+      res.statusCode = 401;
+    } else {
+      res.statusCode = 500;
+    }
+    res.write(err);
+  }
+  res.end();
+}
 
 function createTsk(req, res) {
   const busboy = new Busboy({ headers: req.headers });
@@ -22,8 +38,6 @@ function createTsk(req, res) {
     done: false,
     cancel: false,
   };
-
-  let finished = false;
 
   function abort() {
     req.unpipe(busboy);
@@ -37,24 +51,11 @@ function createTsk(req, res) {
     switch (fieldname) {
       case 'attachment':
         try {
-          data.attachment = await saveFile(file, mimetype);
+          const fileName = randomFileName(mimetype);
+          await saveFile(file, mimetype, 'file', fileName);
+          data.attachment = fileName;
         } catch (err) {
           abort();
-        }
-        if (finished) {
-          try {
-            await writeDataTask(data);
-            res.setHeader('content-type', 'application/json');
-            res.write(JSON.stringify(data));
-          } catch (err) {
-            if (err === ERROR_REGISTER_DATA_INVALID) {
-              res.statusCode = 401;
-            } else {
-              res.statusCode = 500;
-            }
-            res.write(err);
-          }
-          res.end();
         }
         break;
       default: {
@@ -78,7 +79,7 @@ function createTsk(req, res) {
   });
 
   busboy.on('finish', async () => {
-    finished = true;
+    await write(res, data);
   });
 
   req.on('aborted', abort);

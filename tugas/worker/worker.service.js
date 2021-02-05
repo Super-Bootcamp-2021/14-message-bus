@@ -9,9 +9,26 @@ const {
   ERROR_REGISTER_DATA_INVALID,
   ERROR_WORKER_NOT_FOUND,
 } = require('../lib/orm');
-const { saveFile } = require('../lib/storage');
+const { saveFile, randomFileName } = require('../lib/storage');
 // eslint-disable-next-line no-unused-vars
 const { IncomingMessage, ServerResponse } = require('http');
+
+async function write(res, data) {
+  try {
+    const worker = await writeData(data);
+    await messageClient.publish('performance.worker', JSON.stringify(worker));
+    res.setHeader('content-type', 'application/json');
+    res.write(JSON.stringify(worker));
+  } catch (err) {
+    if (err === ERROR_REGISTER_DATA_INVALID) {
+      res.statusCode = 401;
+    } else {
+      res.statusCode = 500;
+    }
+    res.write(err);
+  }
+  res.end();
+}
 
 function registerSvc(req, res) {
   const busboy = new Busboy({ headers: req.headers });
@@ -25,8 +42,6 @@ function registerSvc(req, res) {
     photo: '',
   };
 
-  let finished = false;
-
   function abort() {
     req.unpipe(busboy);
     if (!req.aborted) {
@@ -39,28 +54,11 @@ function registerSvc(req, res) {
     switch (fieldname) {
       case 'photo':
         try {
-          data.photo = await saveFile(file, mimetype);
+          const fileName = randomFileName(mimetype);
+          await saveFile(file, mimetype, 'photo', fileName);
+          data.photo = fileName;
         } catch (err) {
           abort();
-        }
-        if (finished) {
-          try {
-            const worker = await writeData(data);
-            await messageClient.publish(
-              'performance.worker',
-              JSON.stringify(worker)
-            );
-            res.setHeader('content-type', 'application/json');
-            res.write(JSON.stringify(worker));
-          } catch (err) {
-            if (err === ERROR_REGISTER_DATA_INVALID) {
-              res.statusCode = 401;
-            } else {
-              res.statusCode = 500;
-            }
-            res.write(err);
-          }
-          res.end();
         }
         break;
       default: {
@@ -81,7 +79,7 @@ function registerSvc(req, res) {
   });
 
   busboy.on('finish', async () => {
-    finished = true;
+    await write(res, data);
   });
 
   req.on('aborted', abort);

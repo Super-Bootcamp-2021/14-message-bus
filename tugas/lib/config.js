@@ -5,7 +5,7 @@ const CONFIG = {
     dialect: 'mysql',
     logging: false,
   },
-  DATABASE: 'erdium',
+  DATABASE: 'erbium',
   USERNAME: 'root',
   PASSWORD: '',
 };
