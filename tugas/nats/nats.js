@@ -1,5 +1,6 @@
 /* eslint-disable no-unused-vars */
 const nats = require('nats');
+const { taskLog } = require('./performance.client');
 
 const client = nats.connect();
 
@@ -18,7 +19,8 @@ function subscriber() {
   let subTask1, subTask2, subTask3;
 
   subTask1 = client.subscribe('task.created.*', (msg, reply, subject, sid) => {
-    console.log('sub-1: ', msg);
+    taskLog(msg);
+    console.log(msg);
     if (msg === 'unsub') {
       if (subTask1) {
         client.unsubscribe(subTask1);
@@ -28,7 +30,8 @@ function subscriber() {
   });
 
   subTask2 = client.subscribe('task.done', (msg, reply, subject, sid) => {
-    console.log('sub-2: ', msg);
+    taskLog(msg);
+    console.log(msg);
     if (msg === 'unsub') {
       if (subTask2) {
         client.unsubscribe(subTask2);
@@ -38,7 +41,8 @@ function subscriber() {
   });
 
   subTask3 = client.subscribe('task.cancel', (msg, reply, subject, sid) => {
-    console.log('sub-3: ', msg);
+    taskLog(msg);
+    console.log(msg);
     if (msg === 'unsub') {
       if (subTask3) {
         client.unsubscribe(subTask3);
@@ -51,13 +55,13 @@ function subscriber() {
 function streamer(data) {
   switch (data) {
     case 'task.created':
-      client.publish('task.created.successfully', 'task created');
+      client.publish('task.created.successfully', 'task.created');
       break;
     case 'task.done':
-      client.publish('task.done', 'task done');
+      client.publish('task.done', 'task.done');
       break;
     case 'task.cancel':
-      client.publish('task.cancel', 'task cancel');
+      client.publish('task.cancel', 'task.cancel');
       break;
     default:
       break;

@@ -1,7 +1,7 @@
 const ERROR_CREATE_DATA_INVALID = 'data pekerjaan tidak lengkap';
 const ERROR_TASK_NOT_FOUND = 'pekerjaan tidak ditemukan';
 // const { main, updateDB, doneDB, cancelDB } = require('../lib/database');
-const { streamer } = require('../lib/nats');
+const { streamer } = require('../nats/nats');
 const {
   createTask,
   updateTask,
@@ -56,8 +56,8 @@ async function cancel(id) {
     id: id,
   };
 
-  streamer('task.cancel');
   await cancelTask(task);
+  streamer('task.cancel');
   return task;
 }
 
