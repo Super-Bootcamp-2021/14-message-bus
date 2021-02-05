@@ -24,8 +24,6 @@ function registerSvc(req, res) {
     photo: '',
   };
 
-  let finished = false;
-
   function abort() {
     req.unpipe(busboy);
     if (!req.aborted) {
@@ -37,25 +35,11 @@ function registerSvc(req, res) {
   busboy.on('file', async (fieldname, file, filename, encoding, mimetype) => {
     switch (fieldname) {
       case 'photo':
+				file.on('error', abort);
         try {
-          data.photo = await saveFile(file, mimetype);
+          data.photo = await saveFile('photo', file, mimetype);
         } catch (err) {
           abort();
-        }
-        if (finished) {
-          try {
-            const worker = await register(data);
-            res.setHeader('content-type', 'application/json');
-            res.write(JSON.stringify(worker));
-          } catch (err) {
-            if (err === ERROR_REGISTER_DATA_INVALID) {
-              res.statusCode = 401;
-            } else {
-              res.statusCode = 500;
-            }
-            res.write(err);
-          }
-          res.end();
         }
         break;
       default: {
@@ -78,7 +62,19 @@ function registerSvc(req, res) {
   });
 
   busboy.on('finish', async () => {
-    finished = true;
+    try {
+			const worker = await register(data);
+			res.setHeader('content-type', 'application/json');
+			res.write(JSON.stringify(worker));
+		} catch (err) {
+			if (err === ERROR_REGISTER_DATA_INVALID) {
+				res.statusCode = 401;
+			} else {
+				res.statusCode = 500;
+			}
+			res.write(err);
+		}
+		res.end();
   });
 
   req.on('aborted', abort);
