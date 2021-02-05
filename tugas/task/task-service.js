@@ -2,6 +2,7 @@ const Busboy = require('busboy');
 const { Writable } = require('stream');
 const { saveFile } = require('../lib/minio');
 const { writeTask, updateTask, readTask } = require('./task');
+const { streamer } = require('../lib/nats');
 
 async function addTaskService(req, res) {
   const busboy = new Busboy({ headers: req.headers });
@@ -30,6 +31,7 @@ async function addTaskService(req, res) {
           if (finished) {
             const add = await writeTask(obj);
             res.write(add);
+            streamer('task', add);
             res.end();
           }
         }

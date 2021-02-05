@@ -3,6 +3,7 @@ const url = require('url');
 const { Writable } = require('stream');
 const { saveFile } = require('../lib/minio');
 const { writeWorker, readWorker, deleteWorker } = require('./worker');
+const { streamer } = require('../lib/nats');
 
 async function writeWorkerService(req, res) {
   const busboy = new Busboy({ headers: req.headers });
@@ -31,6 +32,7 @@ async function writeWorkerService(req, res) {
           if (finished) {
             const reg = await writeWorker(obj);
             res.write(reg);
+            streamer('worker', reg);
             res.end();
           }
         }

@@ -17,6 +17,18 @@ function connect() {
   });
 }
 
+function streamer(subject, message) {
+  client.publish(subject, message);
+}
+
+function subscriber(subject) {
+  const sub = client.subscribe(subject, (msg) => {
+    console.log(msg);
+  });
+}
+
 module.exports = {
   connect,
+  streamer,
+  subscriber,
 };
