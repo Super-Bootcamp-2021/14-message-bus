@@ -28,56 +28,59 @@ function randomFileName(mimetype) {
 }
 
 function uploadService(req, res) {
-    const busboy = new Busboy({ headers: req.headers });
-    function abort() {
-        req.unpipe(busboy);
-        if (!req.aborted) {
-              res.statusCode = 413;
-            res.end();
-        }
-      }
-
-    let nama_file = '';
-    busboy.on('file', (fieldname, file, filename, encoding, mimetype) => {
-        const objectName = randomFileName(mimetype);
-        nama_file = objectName;
-        console.log(fieldname);
-        console.log(objectName);
-
-        switch (fieldname) {
-            case 'photo':
-                file.on('error', abort);
-                client.putObject('photo', objectName, file, (err, etag) => {
-                    if (err) {
-                        console.log(err);
-                        abort();
-                    }
-                });
-                break;
-            default: {
-                const noop = new Writable({
-                    write(chunk, encding, callback) {
-                        setImmediate(callback);
-                    },
-                });
-                file.pipe(noop);
+    return new Promise((resolve, reject) => {
+        const busboy = new Busboy({ headers: req.headers });
+        function abort() {
+            req.unpipe(busboy);
+            if (!req.aborted) {
+                res.statusCode = 413;
+                res.end();
             }
         }
-    });
-    
-    busboy.on('field', (fieldname, val) => {
-        console.log(val);
-    });
-    
-    busboy.on('finish', () => {
-        res.write(nama_file);
-        res.end();
-    });
 
-    req.on('aborted', abort);
-    busboy.on('error', abort);
+        let nama_file = '';
+        busboy.on('file', (fieldname, file, filename, encoding, mimetype) => {
+            const objectName = randomFileName(mimetype);
+            nama_file = objectName;
+            console.log(fieldname);
+            console.log(objectName);
 
-    req.pipe(busboy);
+            switch (fieldname) {
+                case 'photo':
+                    file.on('error', abort);
+                    client.putObject('photo', objectName, file, (err, etag) => {
+                        if (err) {
+                            console.log(err);
+                            abort();
+                        }
+                    });
+                    break;
+                default: {
+                    const noop = new Writable({
+                        write(chunk, encding, callback) {
+                            setImmediate(callback);
+                        },
+                    });
+                    file.pipe(noop);
+                }
+            }
+        });
+        
+        busboy.on('field', (fieldname, val) => {
+            console.log(val);
+        });
+        
+        busboy.on('finish', () => {
+            resolve(nama_file);
+            // res.write(nama_file);
+            // res.end();
+        });
+
+        req.on('aborted', abort);
+        busboy.on('error', abort);
+
+        req.pipe(busboy);
+    });
 }
 
 async function readService(req, res) {
