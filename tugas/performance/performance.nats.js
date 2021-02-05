@@ -1,13 +1,15 @@
-const {
-  sub,
-} = require('../lib/msgbus');
+const { sub } = require('../lib/msgbus');
+const {workerLog} = require('./performance');
 
-async function workerSubscriber() {
-  workerSub = sub('worker.*', (msg, reply, subject, sid) => {
-    const type = subject.replace('worker.', '');
-		await workerLog(type, JSON.parse(msg));
-  });
+function workerSubscriber() {	
+  	const workerSub = sub('worker.*', workerSubHandling);
+    return;
 }
+
+async function workerSubHandling(msg, reply, subject, sid) {
+	const type = subject.replace('worker.', '');
+	await workerLog(type, JSON.parse(msg));
+};
 
 module.exports = {
   workerSubscriber,

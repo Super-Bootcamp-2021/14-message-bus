@@ -12,13 +12,13 @@ async function workerLog(type, log) {
 		workers.remove = [];
   }
 	switch(type) {
-		case list:
+		case 'list':
 			workers.list.push(log);
 			break;
-		case register:
+		case 'register':
 			workers.register.push(log);
 			break;
-		case remove:
+		case 'remove':
 			workers.remove.push(log);
 			break;
 		default:
@@ -27,3 +27,7 @@ async function workerLog(type, log) {
   await save('worker', workers);
   return;
 }
+
+module.exports = {
+  workerLog,
+};

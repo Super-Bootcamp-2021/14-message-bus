@@ -3,6 +3,7 @@ const kv = require('./lib/kv');
 const msgbus = require('./lib/msgbus');
 const workerServer = require('./workers/server');
 const taskServer = require('./tasks/server');
+const {workerSubscriber} = require('./performance/performance.nats');
 
 async function relationaldb() {
   try {
@@ -49,7 +50,8 @@ async function main(command) {
       await relationaldb();
       await kvdb();
       await messageBus();
-      workerServer.run();
+      workerSubscriber();
+			workerServer.run();
       break;
     default:
       console.log(`${command} 5tidak dikenali`);

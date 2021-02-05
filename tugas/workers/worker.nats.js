@@ -1,63 +1,57 @@
 const { pub } = require('../lib/msgbus');
 
-async function registerSuccessLog(data) {
+function registerSuccessLog(data) {
   const log = {
 		time : Date.now(),
 		data : data,
 		success: true,
 	} 
-	await pub('worker.register', JSON.stringify(log));
-  return;
+	pub('worker.register', JSON.stringify(log));
 }
 
-async function registerErrorLog(data) {
+function registerErrorLog(data) {
   const log = {
 		time : Date.now(),
 		data : data,
 		success: false,
 	} 
-	await pub('worker.register', JSON.stringify(log));
-  return;
+	pub('worker.register', JSON.stringify(log));
 }
 
-async function listSuccessLog(data) {
+function listSuccessLog(data) {
   const log = {
 		time : Date.now(),
 		data : data,
 		success: true,
 	} 
-	await pub('worker.list', JSON.stringify(log));
-  return;
+	pub('worker.list', JSON.stringify(log));
 }
 
-async function listErrorLog(data) {
+function listErrorLog(data) {
   const log = {
 		time : Date.now(),
 		data : data,
 		success: false,
 	} 
-	await pub('worker.list', JSON.stringify(log));
-  return;
+	pub('worker.list', JSON.stringify(log));
 }
 
-async function removeSuccessLog(data) {
+function removeSuccessLog(data) {
   const log = {
 		time : Date.now(),
 		data : data,
 		success: true,
 	} 
-	await pub('worker.remove', JSON.stringify(log));
-  return;
+	pub('worker.remove', JSON.stringify(log));
 }
 
-async function removeErrorLog(data) {
+function removeErrorLog(data) {
   const log = {
 		time : Date.now(),
 		data : data,
 		success: false,
 	} 
-	await pub('worker.remove', JSON.stringify(log));
-  return;
+	pub('worker.remove', JSON.stringify(log));
 }
 
 module.exports = {

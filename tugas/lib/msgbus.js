@@ -1,6 +1,4 @@
 const nats = require('nats');
-const { promisify } = require('util');
-
 let client;
 
 function connect() {
@@ -16,19 +14,15 @@ function connect() {
 }
 
 function sub(subjectName, callback) {
-  const subAsync = promisify(client.subscribe).bind(client);
-  return subAsync(subjectName, callback);
+  return client.subscribe(subjectName, callback);
 }
 
 function unsub(subscriber) {
-  const unsubAsync = promisify(client.unsubscribe).bind(client);
-  return unsubAsync(subscriber);
+  return client.unsubscribe(subscriber);
 }
 
-async function pub(subjectName, msg) {
-  const pubAsync = promisify(client.publish).bind(client);
-  await pubAsync(subjectName, msg);
-  return;
+function pub(subjectName, msg) {
+  client.publish(subjectName, msg);
 }
 
 function close() {
