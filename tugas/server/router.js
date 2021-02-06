@@ -7,6 +7,7 @@ const {
   listTsk,
   removeTsk,
 } = require('../tasks/tasks.service');
+const { showWorkerPerformance } = require('../performance/performance.service');
 
 async function router(req, res) {
   function respond(statusCode, message) {
@@ -69,6 +70,13 @@ async function router(req, res) {
       case '/remove-task':
         if (req.method === 'DELETE') {
           return removeTsk(req, res);
+        } else {
+          respond(404);
+        }
+        break;
+        case '/performance':
+        if (req.method === 'GET') {
+          return showWorkerPerformance(req, res);
         } else {
           respond(404);
         }
