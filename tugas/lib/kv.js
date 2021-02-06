@@ -27,7 +27,7 @@ function connect() {
  */
 function save(db, data) {
   const setAsync = promisify(client.set).bind(client);
-  return setAsync(db, JSON.stringify(data));
+  return setAsync(db, data.toString());
 }
 
 /**
@@ -35,10 +35,9 @@ function save(db, data) {
  * @param {string} db database name
  * @returns {Promise<any>} data
  */
-async function read(db) {
+function read(db) {
   const getAsync = promisify(client.get).bind(client);
-  const val = await getAsync(db);
-  return JSON.parse(val);
+  return getAsync(db);
 }
 
 /**

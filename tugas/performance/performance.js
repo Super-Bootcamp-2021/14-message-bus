@@ -1,9 +1,12 @@
 const { save, read } = require('../lib/kv');
 
 async function workerLog(msg) {
-  let count = await read('workerTotal');
-  if (!count) {
+  const data = await read('workerTotal');
+  let count;
+  if (!data) {
     count = 0;
+  } else {
+    count = parseInt(data);
   }
   switch (msg) {
     case 'add':
