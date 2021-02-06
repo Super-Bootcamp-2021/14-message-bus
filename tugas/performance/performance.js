@@ -22,3 +22,4 @@ async function readPerformanceData() {
 }
 
 module.exports = readPerformanceData;
+
