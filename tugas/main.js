@@ -1,3 +1,5 @@
+const { connect } = require('./lib/orm');
+const kv = require('./lib/kv');
 // const { TaskSchema } = require('./tasks/task.model');
 const { WorkerSchema } = require('./worker/worker.model');
 const workerServer = require('./worker/server');
@@ -7,6 +9,9 @@ const workerServer = require('./worker/server');
  */
 async function init() {
   try {
+    console.log('connect to KV service...');
+    await kv.connect();
+    console.log('KV connected');
     console.log('connect to orm....');
     await connect([WorkerSchema], {
       type: 'mysql',
