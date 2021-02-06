@@ -82,11 +82,22 @@ async function updateWorker({ id, nama, email, telepon, alamat, biografi, foto }
   return result[0].toString();
 }
 
+async function getWorkerById(id) {
+  const result = await worker.findOne({
+    where: {
+       id: id
+    }
+  });
+
+  return JSON.stringify(result);
+}
+
 module.exports = {
   writeWorker,
   readWorker,
   updateWorker,
   deleteWorker,
+  getWorkerById
 };
 
 //writeWorker({ nama: 'ilham', email: 'ilham@mail.com', telepon: '097848', alamat: 'bangkalan', biografi: 'ini biografi'});

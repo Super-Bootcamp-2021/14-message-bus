@@ -12,6 +12,7 @@ const {
   readWorker,
   updateWorker,
   deleteWorker,
+  getWorkerById
 } = require('./sequalize/worker-crud');
 
 const {
@@ -41,17 +42,8 @@ const server = createServer(async (req, res) => {
   switch (true) {
     case /^\/worker\/write/.test(uri.pathname):
       // console.log(req.headers);
-      if (method === 'GET') {
-        let data = {
-          nama: 'ilham',
-          email: 'ilham@mail.com',
-          telepon: '097848',
-          alamat: 'bangkalan',
-          biografi: 'ini biografi',
-          foto: '213-233.jpg'
-        };
-
-        message = await writeWorker(data);
+      if (method === 'GET') {       
+        message = await writeWorker(JSON.parse(uri.query["data"]));
         res.setHeader('Content-Type', 'application/json');
       } else {
         message = 'Method tidak tersedia';
@@ -88,11 +80,15 @@ const server = createServer(async (req, res) => {
         message = 'Method tidak tersedia';
       }
       break;
-    case /^\/task\/write/.test(uri.pathname):
+    case /^\/worker\/id/.test(uri.pathname):
       if (method === 'GET') {
-        // let data = {
-        //     assignee_id: 19, job: 'ngoding', done: true
-        // };
+        message = await getWorkerById(uri.query['id']);
+      } else {
+        message = 'Method tidak tersedia';
+      }
+      break;
+    case /^\/task\/write/.test(uri.pathname):
+      if (method === 'GET') {        
         message = await writeTask(JSON.parse(uri.query['data']));
         res.setHeader('Content-Type', 'application/json');
       } else {
