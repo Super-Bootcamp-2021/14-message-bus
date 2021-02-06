@@ -1,7 +1,7 @@
 const { pub } = require('../lib/msgbus');
 
-function addWorkerLog() { 
-	pub('worker', 'add');
+function addWorkerLog() {
+  pub('worker', 'add');
 }
 
 function removeWorkerLog() {
@@ -10,5 +10,5 @@ function removeWorkerLog() {
 
 module.exports = {
   addWorkerLog,
-	removeWorkerLog,
+  removeWorkerLog,
 };

@@ -1,23 +1,20 @@
-const {
-  save,
-  read,
-} = require('../lib/kv');
+const { save, read } = require('../lib/kv');
 
 async function workerLog(msg) {
   let count = await read('workerTotal');
-	if (!count) {
+  if (!count) {
     count = 0;
   }
-	switch(msg) {
-		case 'add':
-			count++;
-			break;
-		case 'remove':
-			count--;
-			break;
-		default:
-			return;
-	}
+  switch (msg) {
+    case 'add':
+      count++;
+      break;
+    case 'remove':
+      count--;
+      break;
+    default:
+      return;
+  }
   await save('workerTotal', count);
   return;
 }
@@ -32,5 +29,5 @@ async function listWorkerTotal() {
 
 module.exports = {
   workerLog,
-	listWorkerTotal,
+  listWorkerTotal,
 };

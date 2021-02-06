@@ -4,7 +4,7 @@ const msgbus = require('./lib/msgbus');
 const workerServer = require('./workers/server');
 const taskServer = require('./tasks/server');
 const performanceServer = require('./performance/server');
-const {workerSubscriber} = require('./performance/performance.nats');
+const { workerSubscriber } = require('./performance/performance.nats');
 
 async function relationaldb() {
   try {
@@ -52,13 +52,13 @@ async function main(command) {
       await kvdb();
       await messageBus();
       workerSubscriber();
-			workerServer.run();
+      workerServer.run();
       break;
     case 'performance':
       await kvdb();
       performanceServer.run();
       break;
-		default:
+    default:
       console.log(`${command} 5tidak dikenali`);
       console.log('command yang valid: task, worker, performance');
   }
