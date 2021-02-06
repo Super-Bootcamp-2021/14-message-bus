@@ -1,7 +1,7 @@
 const Busboy = require('busboy');
 const url = require('url');
 const { Writable } = require('stream');
-const { messageClient } = require('../message-bus/client');
+const { performanceTotalWorker } = require('../message-bus/client');
 const {
   writeData,
   readData,
@@ -16,7 +16,7 @@ const { IncomingMessage, ServerResponse } = require('http');
 async function write(res, data) {
   try {
     const worker = await writeData(data);
-    await messageClient.publish('performance.worker', JSON.stringify(worker));
+    await performanceTotalWorker(1)
     res.setHeader('content-type', 'application/json');
     res.write(JSON.stringify(worker));
   } catch (err) {
@@ -54,7 +54,7 @@ function registerSvc(req, res) {
     switch (fieldname) {
       case 'photo':
         try {
-          const fileName = randomFileName(mimetype);
+          const fileName = await randomFileName(mimetype);
           await saveFile(file, mimetype, 'photo', fileName);
           data.photo = fileName;
         } catch (err) {
@@ -91,7 +91,6 @@ function registerSvc(req, res) {
 async function listSvc(req, res) {
   try {
     const workers = await readData();
-    messageClient.publish('performance.worker.list', JSON.stringify(workers));
     res.setHeader('content-type', 'application/json');
     res.write(JSON.stringify(workers));
     res.end();
@@ -113,7 +112,7 @@ async function removeSvc(req, res) {
   }
   try {
     const worker = await removeData(id);
-    messageClient.publish('performance.worker', JSON.stringify(worker));
+    performanceTotalWorker(-1)
     res.setHeader('content-type', 'application/json');
     res.statusCode = 200;
     res.write(JSON.stringify(worker));
