@@ -1,6 +1,6 @@
 const { createServer } = require('http');
 const { stdout } = require('process');
-const { router } = require('./router');
+const { router } = require('./workerRouter');
 
 let server;
 
@@ -11,7 +11,7 @@ function run() {
 
   const PORT = 1979;
   server.listen(PORT, () => {
-    stdout.write(`🚀 server listening on port ${PORT}\n`);
+    stdout.write(`🚀 worker server listening on port ${PORT}\n`);
   });
 }
 

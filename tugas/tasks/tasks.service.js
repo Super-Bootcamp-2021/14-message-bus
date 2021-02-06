@@ -1,7 +1,11 @@
 const Busboy = require('busboy');
 const url = require('url');
 const { Writable } = require('stream');
-const { performanceTotalTask, performanceDoneTask, performanceDroppedlTask } = require('../message-bus/client');
+const {
+  performanceTotalTask,
+  performanceDoneTask,
+  performanceDroppedlTask,
+} = require('../message-bus/client');
 const {
   writeDataTask,
   doneDataTask,
@@ -16,7 +20,7 @@ const { saveFile, randomFileName } = require('../lib/storage');
 async function write(res, data) {
   try {
     await writeDataTask(data);
-    performanceTotalTask(1)
+    performanceTotalTask(1);
     res.setHeader('content-type', 'application/json');
     res.write(JSON.stringify(data));
   } catch (err) {
@@ -101,7 +105,7 @@ async function doneTsk(req, res) {
   }
   try {
     const tasks = await doneDataTask(id);
-    performanceDoneTask(1)
+    performanceDoneTask(1);
     res.setHeader('content-type', 'application/json');
     res.statusCode = 200;
     res.write(JSON.stringify(tasks));
@@ -132,7 +136,7 @@ async function cancelTsk(req, res) {
   }
   try {
     const tasks = await cancelDataTask(id);
-    performanceDroppedlTask(1)    
+    performanceDroppedlTask(1);
     res.setHeader('content-type', 'application/json');
     res.statusCode = 200;
     res.write(JSON.stringify(tasks));
@@ -175,7 +179,7 @@ async function removeTsk(req, res) {
   try {
     const worker = await removeTask(id);
     res.setHeader('content-type', 'application/json');
-    performanceTotalTask(-1)
+    performanceTotalTask(-1);
     res.statusCode = 200;
     res.write(JSON.stringify(worker));
     res.end();

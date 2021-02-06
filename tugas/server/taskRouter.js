@@ -1,5 +1,4 @@
 const url = require('url');
-const { listSvc, registerSvc, removeSvc } = require('../worker/worker.service');
 const {
   createTsk,
   doneTsk,
@@ -7,7 +6,6 @@ const {
   listTsk,
   removeTsk,
 } = require('../tasks/tasks.service');
-const { showWorkerPerformance } = require('../performance/performance.service');
 
 async function router(req, res) {
   function respond(statusCode, message) {
@@ -18,27 +16,6 @@ async function router(req, res) {
   try {
     const uri = url.parse(req.url, true);
     switch (uri.pathname) {
-      case '/register-worker':
-        if (req.method === 'POST') {
-          return registerSvc(req, res);
-        } else {
-          respond(404);
-        }
-        break;
-      case '/list-worker':
-        if (req.method === 'GET') {
-          return listSvc(req, res);
-        } else {
-          respond(404);
-        }
-        break;
-      case '/remove-worker':
-        if (req.method === 'DELETE') {
-          return removeSvc(req, res);
-        } else {
-          respond(404);
-        }
-        break;
       case '/create-task':
         if (req.method === 'POST') {
           return createTsk(req, res);
@@ -70,13 +47,6 @@ async function router(req, res) {
       case '/remove-task':
         if (req.method === 'DELETE') {
           return removeTsk(req, res);
-        } else {
-          respond(404);
-        }
-        break;
-      case '/performance':
-        if (req.method === 'GET') {
-          return showWorkerPerformance(req, res);
         } else {
           respond(404);
         }
