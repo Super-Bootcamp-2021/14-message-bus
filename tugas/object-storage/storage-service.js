@@ -117,9 +117,9 @@ async function readService(req, res) {
   }
 }
 
-async function deleteService(req) {
-    const uri = url.parse(req.url, true);
-    const objectName = uri.pathname.replace('/delete/', '');
+async function deleteService(objectName) {
+    // const uri = url.parse(req.url, true);
+    // const objectName = uri.pathname.replace('/delete/', '');
   
     try {
         await client.statObject('photo', objectName);            
