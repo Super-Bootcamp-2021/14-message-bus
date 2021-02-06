@@ -51,7 +51,6 @@ async function readData() {
 }
 
 async function writeDataTask(data) {
-  console.log(data);
   await task.create(data);
   
 }

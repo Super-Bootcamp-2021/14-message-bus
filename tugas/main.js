@@ -7,7 +7,6 @@ const { kvConnection } = require('./lib/kv');
 
 // cara jalanin = npm start task / npm start worker / npm start performance
 async function main(command) {
-  console.log(command);
   switch (command) {
     case 'task':
       await kvConnection();

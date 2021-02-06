@@ -78,7 +78,6 @@ function createTsk(req, res) {
   busboy.on('field', (fieldname, val) => {
     if (['job', 'assigneeId', 'done', 'cancel'].includes(fieldname)) {
       data[fieldname] = val;
-      console.log(data);
     }
   });
 
@@ -94,9 +93,7 @@ function createTsk(req, res) {
 
 async function doneTsk(req, res) {
   const uri = url.parse(req.url, true);
-  console.log(uri);
   const id = uri.query['id'];
-  console.log(id);
   if (!id) {
     res.statusCode = 401;
     res.write('parameter id tidak ditemukan');
@@ -125,9 +122,7 @@ async function doneTsk(req, res) {
 
 async function cancelTsk(req, res) {
   const uri = url.parse(req.url, true);
-  console.log(uri);
   const id = uri.query['id'];
-  console.log(id);
   if (!id) {
     res.statusCode = 401;
     res.write('parameter id tidak ditemukan');
