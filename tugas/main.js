@@ -10,11 +10,13 @@ async function main(command) {
   console.log(command);
   switch (command) {
     case 'task':
+      await kvConnection();
       await init();
       subscriber();
       taskServer.run();
       break;
     case 'worker':
+      await kvConnection();
       await init();
       subscriber();
       workerServer.run();

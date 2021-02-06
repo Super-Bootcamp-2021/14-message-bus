@@ -40,7 +40,7 @@ async function subscriber() {
             {
               try {
                 const getServiceName = await keyParser(subject);
-                let taskCount = readStoreMessage(getServiceName);
+                let taskCount = await readStoreMessage(getServiceName);
                 if (!taskCount) {
                   taskCount = 0;
                 }
@@ -60,7 +60,7 @@ async function subscriber() {
             {
               try {
                 const getServiceName = await keyParser(subject);
-                let taskCount = readStoreMessage(getServiceName);
+                let taskCount = await readStoreMessage(getServiceName);
                 if (!taskCount) {
                   taskCount = 0;
                 }
@@ -76,7 +76,7 @@ async function subscriber() {
             {
               try {
                 const getServiceName = await keyParser(subject);
-                let taskCount = readStoreMessage(getServiceName);
+                let taskCount = await readStoreMessage(getServiceName);
                 if (!taskCount) {
                   taskCount = 0;
                 }

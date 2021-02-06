@@ -24,14 +24,14 @@ async function router(req, res) {
         }
         break;
       case '/done-task':
-        if (req.method === 'GET') {
+        if (req.method === 'PUT') {
           return doneTsk(req, res);
         } else {
           respond(404);
         }
         break;
       case '/cancel-task':
-        if (req.method === 'GET') {
+        if (req.method === 'PUT') {
           return cancelTsk(req, res);
         } else {
           respond(404);

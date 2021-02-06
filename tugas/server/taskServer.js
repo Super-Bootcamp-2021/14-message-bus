@@ -9,7 +9,7 @@ function run() {
     router(req, res);
   });
 
-  const PORT = 1979;
+  const PORT = 1978;
   server.listen(PORT, () => {
     stdout.write(`🚀 task server listening on port ${PORT}\n`);
   });
