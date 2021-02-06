@@ -1,20 +1,33 @@
-const server = require('./server/server');
+const taskServer = require('./server/workerServer');
+const workerServer = require('./server/taskServer');
+const performanceServer = require('./server/performanceServer');
 const { init } = require('./lib/orm');
 const { subscriber } = require('./message-bus/client');
-const { kvConnection } = require('./lib/kv')
+const { kvConnection } = require('./lib/kv');
 
-async function main() {
-  try {
-    console.log('trying connecting to database ......');
-    await init();
-    await kvConnection();
-  } catch (err) {
-    console.error('server in trouble');
-    return;
+// cara jalanin = npm start task / npm start worker / npm start performance
+async function main(command) {
+  console.log(command);
+  switch (command) {
+    case 'task':
+      await init();
+      subscriber();
+      taskServer.run();
+      break;
+    case 'worker':
+      await init();
+      subscriber();
+      workerServer.run();
+      break;
+    case 'performance':
+      await kvConnection();
+      subscriber();
+      performanceServer.run();
+      break;
+    default:
+      console.log(`${command} tidak dikenali`);
+      console.log('command yang valid: task, worker, performance');
   }
-  console.log('service is running ....');
-  subscriber();
-  server.run();
 }
 
-main();
+main(process.argv[2]);
