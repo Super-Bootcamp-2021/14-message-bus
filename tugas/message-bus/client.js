@@ -40,11 +40,12 @@ async function subscriber() {
             {
               try {
                 const getServiceName = await keyParser(subject);
-                let taskCount = readStoreMessage(getServiceName);
+                let taskCount = await readStoreMessage(getServiceName);
                 if (!taskCount) {
                   taskCount = 0;
                 }
                 let count = taskCount + parseInt(msg);
+                console.log(count)
                 await storeMessage(getServiceName, count.toString());
                 if (parseInt(msg) === -1) {
                   console.log(' task has been deleted');
@@ -60,7 +61,7 @@ async function subscriber() {
             {
               try {
                 const getServiceName = await keyParser(subject);
-                let taskCount = readStoreMessage(getServiceName);
+                let taskCount = await readStoreMessage(getServiceName);
                 if (!taskCount) {
                   taskCount = 0;
                 }
@@ -76,7 +77,7 @@ async function subscriber() {
             {
               try {
                 const getServiceName = await keyParser(subject);
-                let taskCount = readStoreMessage(getServiceName);
+                let taskCount = await readStoreMessage(getServiceName);
                 if (!taskCount) {
                   taskCount = 0;
                 }
@@ -99,10 +100,7 @@ async function subscriber() {
 }
 
 async function performanceTotalWorker(data) {
-  await messageClient.publish(
-    'performance.workers.total',
-    JSON.stringify(data)
-  );
+  await messageClient.publish('performance.workers.total', JSON.stringify(data));
 }
 async function performanceTotalTask(data) {
   await messageClient.publish('performance.tasks.total', JSON.stringify(data));
