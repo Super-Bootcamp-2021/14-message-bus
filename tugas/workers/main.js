@@ -13,11 +13,12 @@ const  {
 } = require("./worker-service");
 
 const {
-   writeWorker,
-   readWorker,
-   updateWorker,
+   insertWorker,
+   selectWorker,
    deleteWorker,
- } = require("../database-storage/sequalize/worker-crud");
+   selectWorkerById
+ } = require("./db-request");
+const { worker } = require('cluster');
 
 const server = createServer(async (req, res) => {
    let method = req.method;
@@ -48,7 +49,7 @@ const server = createServer(async (req, res) => {
                   data['foto'] = result;
                })
                .then(async () => {
-                  return await writeWorker(data);
+                  return await insertWorker(data);
                })
                .then((val) => {
                   res.setHeader('Content-Type', 'application/json');
@@ -60,19 +61,24 @@ const server = createServer(async (req, res) => {
          }
          break;      
 
-      case /^\/read\/worker/.test(uri.pathname):
+      case /^\/read/.test(uri.pathname):
          if (method === 'GET') {
-            message = "await readWorker()";
+            message = await selectWorker();
             res.setHeader('Content-Type', 'application/json');
+            res.write(message);
+            res.end();
          } else {
             respond();
          }
          break;
          
-      case /^\/delete\/\w+/.test(uri.pathname):
+      case /^\/delete/.test(uri.pathname):
          if (method === 'GET') {
-            message = await deleteService(req);
-            res.write(message.toString());            
+            const detail_worker = await selectWorkerById(uri.query["id"]);
+            const foto = JSON.parse(detail_worker).foto;
+            deleteService(foto);                 
+            message = await deleteWorker(uri.query["id"]);
+            res.write(message);
             res.end();
          } else {
             message = 'Method tidak tersedia';
