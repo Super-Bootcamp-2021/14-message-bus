@@ -3,6 +3,8 @@ const {
   listTask,
   listTaskCancel,
   listTaskDone,
+  dropList,
+  ERROR_KEY_NOT_FOUND,
 } = require('./performance');
 const url = require('url');
 
@@ -36,9 +38,38 @@ async function listTaskCancelSvc(req, res) {
   res.end();
 }
 
+async function dropListSvc(req, res) {
+  const uri = url.parse(req.url, true);
+  const key = uri.query['key'];
+  if (!key) {
+    res.statusCode = 401;
+    res.write('parameter key tidak ditemukan');
+    res.end();
+    return;
+  }
+
+  try {
+    const result = await dropList(key);
+    res.setHeader('content-type', 'application/json');
+    res.write(JSON.stringify(result));
+    res.end();
+  } catch (err) {
+    if (err === ERROR_KEY_NOT_FOUND) {
+      res.statusCode = 404;
+      res.write(err);
+      res.end();
+      return;
+    }
+    res.statusCode = 500;
+    res.end();
+    return;
+  }
+}
+
 module.exports = {
   taskSvc,
   listTaskSvc,
   listTaskDoneSvc,
   listTaskCancelSvc,
+  dropListSvc,
 };

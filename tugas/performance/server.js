@@ -6,6 +6,7 @@ const {
   listTaskSvc,
   listTaskCancelSvc,
   listTaskDoneSvc,
+  dropListSvc,
 } = require('./performance.service');
 
 let server;
@@ -56,6 +57,13 @@ function run() {
           respond(404);
         }
         break;
+      case '/drop':
+        if (req.method === 'GET') {
+          return dropListSvc(req, res);
+        } else {
+          respond(404);
+        }
+        break;
 
       default:
         respond(404);
@@ -67,6 +75,23 @@ function run() {
     stdout.write(`server performance service listening on port ${PORT}\n`);
   });
 }
+
+// const redis = require('../lib/kv');
+// async function perf() {
+//   try {
+//     console.log('connect to redis service...');
+//     await redis.connect();
+//     console.log('redis connected');
+//   } catch (err) {
+//     console.error('redis connection failed');
+//     return;
+//   }
+
+//   console.log('running service...');
+//   run();
+// }
+
+// perf();
 
 module.exports = {
   run,

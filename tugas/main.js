@@ -21,9 +21,6 @@ function main(argv) {
     case 'basic':
       require('./storage-service/main');
       break;
-    case 'nats':
-      require('./lib/nats');
-      break;
     case 'task':
       server.run();
       break;

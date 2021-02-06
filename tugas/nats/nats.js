@@ -18,19 +18,22 @@ client.on('close', (err) => {
 function subscriber() {
   let subTask1, subTask2, subTask3;
 
-  subTask1 = client.subscribe('task.created.*', (msg, reply, subject, sid) => {
-    taskLog(msg);
-    console.log(msg);
-    if (msg === 'unsub') {
-      if (subTask1) {
-        client.unsubscribe(subTask1);
-        console.log('subTask1: unsubscribed');
+  subTask1 = client.subscribe(
+    'task.created.*',
+    async (msg, reply, subject, sid) => {
+      await taskLog(msg);
+      console.log(msg);
+      if (msg === 'unsub') {
+        if (subTask1) {
+          client.unsubscribe(subTask1);
+          console.log('subTask1: unsubscribed');
+        }
       }
     }
-  });
+  );
 
-  subTask2 = client.subscribe('task.done', (msg, reply, subject, sid) => {
-    taskLog(msg);
+  subTask2 = client.subscribe('task.done', async (msg, reply, subject, sid) => {
+    await taskLog(msg);
     console.log(msg);
     if (msg === 'unsub') {
       if (subTask2) {
@@ -40,16 +43,19 @@ function subscriber() {
     }
   });
 
-  subTask3 = client.subscribe('task.cancel', (msg, reply, subject, sid) => {
-    taskLog(msg);
-    console.log(msg);
-    if (msg === 'unsub') {
-      if (subTask3) {
-        client.unsubscribe(subTask3);
-        console.log('subTask1: unsubscribed');
+  subTask3 = client.subscribe(
+    'task.cancel',
+    async (msg, reply, subject, sid) => {
+      await taskLog(msg);
+      console.log(msg);
+      if (msg === 'unsub') {
+        if (subTask3) {
+          client.unsubscribe(subTask3);
+          console.log('subTask1: unsubscribed');
+        }
       }
     }
-  });
+  );
 }
 
 function streamer(data) {

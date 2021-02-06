@@ -1,4 +1,5 @@
-const { read, save } = require('../lib/kv');
+const { read, save, drop } = require('../lib/kv');
+const ERROR_KEY_NOT_FOUND = 'key tidak ditemukan';
 
 async function taskLog(data) {
   let taskLogs = await read(data);
@@ -41,9 +42,21 @@ async function listTaskCancel() {
   return result;
 }
 
+async function dropList(key) {
+  let list = await read(key);
+  if (!list) {
+    throw ERROR_KEY_NOT_FOUND;
+  }
+
+  const result = await drop(key);
+  return result;
+}
+
 module.exports = {
   taskLog,
   listTask,
   listTaskDone,
   listTaskCancel,
+  dropList,
+  ERROR_KEY_NOT_FOUND,
 };

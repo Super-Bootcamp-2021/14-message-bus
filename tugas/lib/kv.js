@@ -26,8 +26,14 @@ async function read(db) {
   return JSON.parse(val);
 }
 
+async function drop(db) {
+  const dropAsync = promisify(client.del).bind(client);
+  return dropAsync(db);
+}
+
 module.exports = {
   save,
   read,
+  drop,
   connect,
 };
