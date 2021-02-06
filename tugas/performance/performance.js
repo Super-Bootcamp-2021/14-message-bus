@@ -3,28 +3,22 @@ const {
   read,
 } = require('../lib/kv');
 
-async function workerLog(type, log) {
-  let workers = await read('worker');
-  if (!workers) {
-    workers = {};
-		workers.list = [];
-		workers.register = [];
-		workers.remove = [];
+async function workerLog(msg) {
+  let count = await read('workerTotal');
+	if (!count) {
+    count = 0;
   }
-	switch(type) {
-		case 'list':
-			workers.list.push(log);
-			break;
-		case 'register':
-			workers.register.push(log);
+	switch(msg) {
+		case 'add':
+			count++;
 			break;
 		case 'remove':
-			workers.remove.push(log);
+			count--;
 			break;
 		default:
 			return;
 	}
-  await save('worker', workers);
+  await save('workerTotal', count);
   return;
 }
 

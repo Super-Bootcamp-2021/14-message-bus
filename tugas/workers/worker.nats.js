@@ -1,64 +1,14 @@
 const { pub } = require('../lib/msgbus');
 
-function registerSuccessLog(data) {
-  const log = {
-		time : Date.now(),
-		data : data,
-		success: true,
-	} 
-	pub('worker.register', JSON.stringify(log));
+function addWorkerLog() { 
+	pub('worker', 'add');
 }
 
-function registerErrorLog(data) {
-  const log = {
-		time : Date.now(),
-		data : data,
-		success: false,
-	} 
-	pub('worker.register', JSON.stringify(log));
-}
-
-function listSuccessLog(data) {
-  const log = {
-		time : Date.now(),
-		data : data,
-		success: true,
-	} 
-	pub('worker.list', JSON.stringify(log));
-}
-
-function listErrorLog(data) {
-  const log = {
-		time : Date.now(),
-		data : data,
-		success: false,
-	} 
-	pub('worker.list', JSON.stringify(log));
-}
-
-function removeSuccessLog(data) {
-  const log = {
-		time : Date.now(),
-		data : data,
-		success: true,
-	} 
-	pub('worker.remove', JSON.stringify(log));
-}
-
-function removeErrorLog(data) {
-  const log = {
-		time : Date.now(),
-		data : data,
-		success: false,
-	} 
-	pub('worker.remove', JSON.stringify(log));
+function removeWorkerLog() {
+  pub('worker', 'remove');
 }
 
 module.exports = {
-  registerErrorLog,
-	registerSuccessLog,
-  listErrorLog,
-	listSuccessLog,
-  removeErrorLog,
-	removeSuccessLog,
+  addWorkerLog,
+	removeWorkerLog,
 };
