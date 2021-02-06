@@ -12,6 +12,7 @@
         "<node_internals>/**"
       ],
       "program": "${workspaceFolder}\\index.js",
+      // "program": "${workspaceFolder}/tugas/performance\\server.js",
       "console": "integratedTerminal",
     },
     {
