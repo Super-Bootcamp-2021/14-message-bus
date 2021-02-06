@@ -1,5 +1,6 @@
 const { connect } = require('./lib/orm');
 const kv = require('./lib/kv');
+const nats = require('./lib/nats');
 // const { TaskSchema } = require('./tasks/task.model');
 const { WorkerSchema } = require('./worker/worker.model');
 const workerServer = require('./worker/server');
@@ -22,6 +23,9 @@ async function init() {
       database: 'dubnium',
     });
     console.log('database connected');
+    console.log('connect to nats...');
+    await nats.connect();
+    console.log('nats connected');
   } catch (err) {
     console.error('database connection failed');
     return;
