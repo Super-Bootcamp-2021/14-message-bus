@@ -12,6 +12,12 @@ const {
   cancelTaskService,
   readTaskService,
 } = require('../task/task-service');
+const {
+  readTaskAddedService,
+  readTaskCancelledService,
+  readTaskDoneService,
+  readWorkerAddedService,
+} = require('../performance/performance-service');
 
 const server = createServer((req, res) => {
   let method = req.method;
@@ -76,6 +82,38 @@ const server = createServer((req, res) => {
     case uri.pathname === '/pekerjaan/list':
       if (method === 'GET') {
         readTaskService(req, res);
+      } else {
+        message = 'Method tidak tersedia';
+        respond();
+      }
+      break;
+    case uri.pathname === '/jumlah/pekerja':
+      if (method === 'GET') {
+        readWorkerAddedService(req, res);
+      } else {
+        message = 'Method tidak tersedia';
+        respond();
+      }
+      break;
+    case uri.pathname === '/jumlah/pekerjaan':
+      if (method === 'GET') {
+        readTaskAddedService(req, res);
+      } else {
+        message = 'Method tidak tersedia';
+        respond();
+      }
+      break;
+    case uri.pathname === '/jumlah/cancel':
+      if (method === 'GET') {
+        readTaskCancelledService(req, res);
+      } else {
+        message = 'Method tidak tersedia';
+        respond();
+      }
+      break;
+    case uri.pathname === '/jumlah/done':
+      if (method === 'GET') {
+        readTaskDoneService(req, res);
       } else {
         message = 'Method tidak tersedia';
         respond();

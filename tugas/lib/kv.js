@@ -17,13 +17,13 @@ function connect() {
 
 function save(db, data) {
   const setAsync = promisify(client.set).bind(client);
-  return setAsync(db, data);
+  return setAsync(db, JSON.stringify(data));
 }
 
 async function read(db) {
   const getAsync = promisify(client.get).bind(client);
   const val = await getAsync(db);
-  return JSON.parse(val);
+  return val;
 }
 
 function drop(db) {
