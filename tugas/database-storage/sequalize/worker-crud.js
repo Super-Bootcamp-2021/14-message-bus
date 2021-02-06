@@ -35,13 +35,14 @@ async function init() {
 
 init();
 
-async function writeWorker({ nama, email, telepon, alamat, biografi }) {
+async function writeWorker({ nama, email, telepon, alamat, biografi, foto }) {
   const result = await worker.create({
     nama: nama,
     email: email,
     telepon: telepon,
     alamat: alamat,
     biografi: biografi,
+    foto: foto
   });
 
   return JSON.stringify(result.dataValues);
@@ -62,7 +63,7 @@ async function deleteWorker(id) {
   return result.toString();
 }
 
-async function updateWorker({ id, nama, email, telepon, alamat, biografi }) {
+async function updateWorker({ id, nama, email, telepon, alamat, biografi, foto }) {
   const result = await worker.update(
     {
       nama: nama,
@@ -70,6 +71,7 @@ async function updateWorker({ id, nama, email, telepon, alamat, biografi }) {
       telepon: telepon,
       alamat: alamat,
       biografi: biografi,
+      foto: foto
     },
     {
       where: {

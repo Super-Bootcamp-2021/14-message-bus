@@ -37,6 +37,10 @@ function defineWorker(orm) {
         type: DataTypes.TEXT,
         allowNull: true,
       },
+      foto: {
+        type: DataTypes.TEXT,
+        allowNull: true
+      }
     },
     {
       timestamps: false,

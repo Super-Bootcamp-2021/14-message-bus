@@ -48,6 +48,7 @@ const server = createServer(async (req, res) => {
           telepon: '097848',
           alamat: 'bangkalan',
           biografi: 'ini biografi',
+          foto: '213-233.jpg'
         };
 
         message = await writeWorker(data);
@@ -65,6 +66,7 @@ const server = createServer(async (req, res) => {
           telepon: '097848',
           alamat: 'bangkalan',
           biografi: 'ini biografi',
+          foto: '676-211.jpg'
         };
         message = await updateWorker(data);
       } else {
