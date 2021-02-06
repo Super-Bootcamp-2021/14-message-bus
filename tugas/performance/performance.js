@@ -22,6 +22,15 @@ async function workerLog(msg) {
   return;
 }
 
+async function listWorkerTotal() {
+  let total = await read('workerTotal');
+  if (!total) {
+    total = 0;
+  }
+  return total;
+}
+
 module.exports = {
   workerLog,
+	listWorkerTotal,
 };

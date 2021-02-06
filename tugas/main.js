@@ -3,6 +3,7 @@ const kv = require('./lib/kv');
 const msgbus = require('./lib/msgbus');
 const workerServer = require('./workers/server');
 const taskServer = require('./tasks/server');
+const performanceServer = require('./performance/server');
 const {workerSubscriber} = require('./performance/performance.nats');
 
 async function relationaldb() {
@@ -53,9 +54,13 @@ async function main(command) {
       workerSubscriber();
 			workerServer.run();
       break;
-    default:
+    case 'performance':
+      await kvdb();
+      performanceServer.run();
+      break;
+		default:
       console.log(`${command} 5tidak dikenali`);
-      console.log('command yang valid: task, worker');
+      console.log('command yang valid: task, worker, performance');
   }
 }
 

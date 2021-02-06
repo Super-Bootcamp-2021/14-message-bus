@@ -1,9 +1,9 @@
+const {listWorkerTotal} = require('./performance');
 
-async function listSvc(req, res) {
+async function workerTotalSvc(req, res) {
   try {
-    const workers = await list();
-    res.setHeader('content-type', 'application/json');
-    res.write(JSON.stringify(workers));
+    const total = await listWorkerTotal();
+		res.write(total.toString());
     res.end();
   } catch (err) {
     res.statusCode = 500;
@@ -13,7 +13,5 @@ async function listSvc(req, res) {
 }
 
 module.exports = {
-  listSvc,
-  registerSvc,
-  removeSvc,
+  workerTotalSvc,
 };
