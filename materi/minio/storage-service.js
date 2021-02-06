@@ -13,8 +13,8 @@ const client = new Client({
   endPoint: '127.0.0.1',
   port: 9000,
   useSSL: false,
-  accessKey: 'local-minio',
-  secretKey: 'local-test-secret',
+  accessKey: 'admin',
+  secretKey: 'password',
 });
 
 function randomFileName(mimetype) {
