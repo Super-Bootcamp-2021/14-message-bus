@@ -12,6 +12,13 @@ const  {
    createWorker
 } = require("./worker-service");
 
+const {
+   writeWorker,
+   readWorker,
+   updateWorker,
+   deleteWorker,
+ } = require("../database-storage/sequalize/worker-crud");
+
 const server = createServer(async (req, res) => {
    let method = req.method;
 
@@ -27,7 +34,7 @@ const server = createServer(async (req, res) => {
    const uri = url.parse(req.url, true);
 
    switch (true) {
-      case /^\/create\/worker/.test(uri.pathname):      
+      case /^\/create/.test(uri.pathname):      
          if (method === 'POST') {                
             let data = {};
          
@@ -38,11 +45,14 @@ const server = createServer(async (req, res) => {
 
             uploadService(req, res)
                .then(result => {
-                  data['attachment'] = result;
+                  data['foto'] = result;
                })
-               .then(() => {
+               .then(async () => {
+                  return await writeWorker(data);
+               })
+               .then((val) => {
                   res.setHeader('Content-Type', 'application/json');
-                  res.write(JSON.stringify(data));            
+                  res.write(val);
                   res.end();
                });                           
          } else {
