@@ -13,7 +13,7 @@ async function main(command) {
       taskServer.run();
       break;
     case 'worker':
-      await connection.authenticate(); //db relational connect
+      // await connection.authenticate(); //db relational connect
       workerServer.run();
       break;
     default:

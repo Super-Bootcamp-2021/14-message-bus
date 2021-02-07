@@ -15,6 +15,7 @@ const client = new Client({
   useSSL: false,
   accessKey: 'local-minio',
   secretKey: 'local-test-secret',
+
 });
 
 function randomFileName(mimetype) {
@@ -114,5 +115,5 @@ async function readService(req, res) {
 
 module.exports = {
   uploadService,
-  readService,
+  readService
 };
