@@ -9,6 +9,7 @@ create table workers (
     telepon varchar(12),
     alamat text,
     biografi text,    
+    foto text,
   	primary key(id)
 );
 
@@ -16,6 +17,7 @@ create table tasks (
   id int AUTO_INCREMENT,
   job text,
   done boolean default false,
+  cancel boolean default false,
   added_at timestamp not null default now(),
   primary key(id),
   assignee_id int,

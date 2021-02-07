@@ -34,10 +34,10 @@ async function init() {
 }
 init();
 
-async function writeTask({ job, attachment, done, cancel }) {
+async function writeTask({ job, attachment, done, cancel, assigneeId }) {
   const result = await task.create({
     job: job,
-    // assigneeId: assigneeId,
+    assigneeId: assigneeId,
     attachment: attachment,
     done: done,
     cancel: cancel,
@@ -61,11 +61,11 @@ async function deleteTask(id) {
   return result.toString();
 }
 
-async function updateTask({ id, job, attachment, done, cancel }) {
+async function updateTask({ id, assigneeId, job, attachment, done, cancel }) {
   const result = await task.update(
     {
       job: job,
-      // assigneeId: assigneeId,
+      assigneeId: assigneeId,
       attachment: attachment,
       done: done,
       cancel: cancel,
