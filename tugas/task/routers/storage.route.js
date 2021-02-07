@@ -1,9 +1,5 @@
 const url = require('url');
-
-const {
-  attachmentService
-} = require('../controllers/task.service');
-
+const { readService } = require("../../storage/storage")
 
 function storageRoutes(req, res) {
   req.params = {};
@@ -25,17 +21,10 @@ function storageRoutes(req, res) {
   };
 
   switch (true) {
-    case /^\/photo\/\w+/.test(uri.pathname):
-        if (method === 'GET') {
-            photoService(req, res)
-        } else {
-            message = 'Method tidak tersedia'
-            respond()
-        }
-      break
     case /^\/attachment\/\w+/.test(uri.pathname):
         if (method === 'GET') {
-            attachmentService(req, res)
+            const folder = "attachment"
+            readService(req, res, folder)
         } else {
             message = 'Method tidak tersedia'
             respond()
