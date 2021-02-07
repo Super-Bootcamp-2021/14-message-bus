@@ -55,6 +55,15 @@ function uploadService(req, res) {
                         }
                     });
                     break;
+                case 'attachment':
+                    file.on('error', abort);
+                    client.putObject('attachment', objectName, file, (err, etag) => {
+                        if (err) {
+                            console.log(err);
+                            abort();
+                        }
+                    });
+                    break;
                 default: {
                     const noop = new Writable({
                         write(chunk, encding, callback) {
@@ -139,8 +148,24 @@ async function deleteService(objectName) {
 }
 
 
+function uploadAttachment(file, mimetype) {
+    return new Promise((resolve, reject) => {
+        const objectName = randomFileName(mimetype);
+        client.putObject('attachment', objectName, file, (err, etag) => {
+            if (err) {
+                console.error(err);
+                reject(err);
+            }
+        });
+
+        resolve(objectName);
+    })
+}
+
+
 module.exports = {
   uploadService,
   readService,
-  deleteService
+  deleteService,
+  uploadAttachment,
 };
