@@ -64,7 +64,52 @@ function subscriber() {
     try {
       const data = JSON.parse(await redisGet('task.trial'));
       data.push({ task: msg, date: getCurrentDate() });
+      await redisSet('worker.trial', JSON.stringify(data, null, 2));
+    } catch (err) {
+      console.log(err);
+    }
+  });
+
+  client.subscribe('worker.register', async (msg, reply, subject, sid) => {
+    console.log('register');
+    const clientRed = createClient();
+    const redisSet = setAsync(clientRed);
+    const redisGet = getAsync(clientRed);
+
+    try {
+      const data = JSON.parse(await redisGet('worker.trial'));
+      data.push({ task: msg, date: getCurrentDate() });
+      await redisSet('worker.trial', JSON.stringify(data, null, 2));
+      console.log(await redisGet('worker.trial'));
+    } catch (err) {
+      console.log(err);
+    }
+  });
+
+  client.subscribe('worker.delete', async (msg, reply, subject, sid) => {
+    const clientRed = createClient();
+    const redisSet = setAsync(clientRed);
+    const redisGet = getAsync(clientRed);
+
+    try {
+      const data = JSON.parse(await redisGet('worker.trial'));
+      data.push({ task: msg, date: getCurrentDate() });
+      await redisSet('worker.trial', JSON.stringify(data, null, 2));
+    } catch (err) {
+      console.log(err);
+    }
+  });
+
+  client.subscribe('worker.get', async (msg, reply, subject, sid) => {
+    const clientRed = createClient();
+    const redisSet = setAsync(clientRed);
+    const redisGet = getAsync(clientRed);
+
+    try {
+      const data = JSON.parse(await redisGet('worker.trial'));
+      data.push({ task: msg, date: getCurrentDate() });
       await redisSet('task.trial', JSON.stringify(data, null, 2));
+      console.log(data);
     } catch (err) {
       console.log(err);
     }
@@ -95,6 +140,25 @@ function streamer() {
     'task.completed',
     JSON.stringify(messageBusCompleted, null, 2)
   );
+
+  const workerRegister = {
+    status: 'success',
+    message: 'success get data',
+  };
+
+  const workerGet = {
+    status: 'success',
+    message: 'success get data',
+  };
+
+  const workerDelete = {
+    status: 'success',
+    message: 'success delete data',
+  };
+
+  client.publish('worker.register', JSON.stringify(workerRegister, null, 2));
+  client.publish('worker.delete', JSON.stringify(workerDelete, null, 2));
+  client.publish('worker.get', JSON.stringify(workerGet, null, 2));
 }
 
 function getCurrentDate() {
