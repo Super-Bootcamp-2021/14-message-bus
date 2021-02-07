@@ -4,6 +4,7 @@ const nats = require('./lib/nats');
 // const { TaskSchema } = require('./tasks/task.model');
 const { WorkerSchema } = require('./worker/worker.model');
 const workerServer = require('./worker/server');
+const peformanceServer = require('./peformance/server');
 
 /**
  * intiate database and other stroage dependency
@@ -43,6 +44,10 @@ async function main(command) {
     case 'worker':
       await init();
       workerServer.run();
+      break;
+    case 'peformance':
+      await init();
+      peformanceServer.run();
       break;
     default:
       console.log(`${command} tidak dikenali`);
