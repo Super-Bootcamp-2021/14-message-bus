@@ -21,6 +21,9 @@ function main(argv) {
     case 'database':
       require('./database-storage/main');
       break;
+    case 'worker':
+      require('./workers/main');
+      break;
     case 'task':
       server.run();
       break;
@@ -34,6 +37,7 @@ function main(argv) {
       console.log(argv[2]);
       process.stdout.write('available commmand are \n');
       process.stdout.write('- database\n');
+      process.stdout.write('- worker\n');
       process.stdout.write('- task\n');
       process.stdout.write('- performance\n');
       process.stdout.write('- object\n');
