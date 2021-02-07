@@ -12,108 +12,37 @@ client.on('error', (err) => {
 });
 
 function subscriber() {
-  client.subscribe('task.get', async (msg, reply, subject, sid) => {
-    console.log('get');
-    const clientRed = createClient();
-    const redisGet = getAsync(clientRed);
+  client.subscribe('task.get', subToKeyValue);
+  client.subscribe('task.create', subToKeyValue);
+  client.subscribe('task.delete', subToKeyValue);
+  client.subscribe('task.completed', subToKeyValue);
+  client.subscribe('worker.register', subToKeyValue);
+  client.subscribe('worker.delete', subToKeyValue);
+  client.subscribe('worker.get', subToKeyValue);
+}
 
-    try {
-      const get = await redisGet('task.trial');
-      console.log(JSON.parse(get));
-    } catch (err) {
-      console.log(err);
-    }
-  });
+async function subToKeyValue(msg, reply, subject, sid) {
+  const clientRed = createClient();
+  const redisSet = setAsync(clientRed);
+  const redisGet = getAsync(clientRed);
+  let key = ['.trial'];
 
-  client.subscribe('task.create', async (msg, reply, subject, sid) => {
-    console.log('create');
-    const clientRed = createClient();
-    const redisSet = setAsync(clientRed);
-    const redisGet = getAsync(clientRed);
+  if (subject.includes('worker')) {
+    key.unshift('worker');
+  } else {
+    key.unshift('task');
+  }
 
-    try {
-      const data = JSON.parse(await redisGet('task.trial'));
-      data.push({ task: msg, date: getCurrentDate() });
-      await redisSet('task.trial', JSON.stringify(data, null, 2));
-    } catch (err) {
-      console.log(err);
-    }
-  });
+  key = key.join('');
 
-  client.subscribe('task.delete', async (msg, reply, subject, sid) => {
-    console.log('delete');
-    const clientRed = createClient();
-    const redisSet = setAsync(clientRed);
-    const redisGet = getAsync(clientRed);
-
-    try {
-      const data = JSON.parse(await redisGet('task.trial'));
-      data.push({ task: msg, date: getCurrentDate() });
-      await redisSet('task.trial', JSON.stringify(data, null, 2));
-    } catch (err) {
-      console.log(err);
-    }
-  });
-
-  client.subscribe('task.completed', async (msg, reply, subject, sid) => {
-    console.log('completed');
-    const clientRed = createClient();
-    const redisSet = setAsync(clientRed);
-    const redisGet = getAsync(clientRed);
-
-    try {
-      const data = JSON.parse(await redisGet('task.trial'));
-      data.push({ task: msg, date: getCurrentDate() });
-      await redisSet('worker.trial', JSON.stringify(data, null, 2));
-    } catch (err) {
-      console.log(err);
-    }
-  });
-
-  client.subscribe('worker.register', async (msg, reply, subject, sid) => {
-    console.log('register');
-    const clientRed = createClient();
-    const redisSet = setAsync(clientRed);
-    const redisGet = getAsync(clientRed);
-
-    try {
-      const data = JSON.parse(await redisGet('worker.trial'));
-      data.push({ task: msg, date: getCurrentDate() });
-      await redisSet('worker.trial', JSON.stringify(data, null, 2));
-      console.log(await redisGet('worker.trial'));
-    } catch (err) {
-      console.log(err);
-    }
-  });
-
-  client.subscribe('worker.delete', async (msg, reply, subject, sid) => {
-    const clientRed = createClient();
-    const redisSet = setAsync(clientRed);
-    const redisGet = getAsync(clientRed);
-
-    try {
-      const data = JSON.parse(await redisGet('worker.trial'));
-      data.push({ task: msg, date: getCurrentDate() });
-      await redisSet('worker.trial', JSON.stringify(data, null, 2));
-    } catch (err) {
-      console.log(err);
-    }
-  });
-
-  client.subscribe('worker.get', async (msg, reply, subject, sid) => {
-    const clientRed = createClient();
-    const redisSet = setAsync(clientRed);
-    const redisGet = getAsync(clientRed);
-
-    try {
-      const data = JSON.parse(await redisGet('worker.trial'));
-      data.push({ task: msg, date: getCurrentDate() });
-      await redisSet('task.trial', JSON.stringify(data, null, 2));
-      console.log(data);
-    } catch (err) {
-      console.log(err);
-    }
-  });
+  try {
+    const data = JSON.parse(await redisGet(key)) || [];
+    data.push({ message: msg, date: getCurrentDate() });
+    await redisSet('task.trial', JSON.stringify(data, null, 2));
+    console.log(data);
+  } catch (err) {
+    console.log(err);
+  }
 }
 
 function streamer() {
@@ -132,7 +61,7 @@ function streamer() {
     status: 'success',
     message: 'success add task',
   };
-
+  client.publish('get.all');
   // event
   client.publish('task.create', JSON.stringify(messageBusCreate, null, 2));
   client.publish('task.delete', JSON.stringify(messageBusDelete, null, 2));
