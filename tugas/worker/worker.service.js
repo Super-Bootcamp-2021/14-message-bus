@@ -8,7 +8,8 @@ const {
   ERROR_REGISTER_DATA_INVALID,
   ERROR_WORKER_NOT_FOUND,
 } = require('./worker');
-
+const { publisher } = require('../lib/nats');
+const { storeObject } = require('../lib/objectStorage');
 // eslint-disable-next-line no-unused-vars
 
 /**
@@ -38,6 +39,7 @@ function registerService(req, res) {
     switch (fieldname) {
       case 'photo':
         file.on('error', abort);
+        const photo = storeObject('photo', file, mimetype);
         data.photo = photo;
         try {
           const worker = await register(data);
@@ -73,6 +75,7 @@ function registerService(req, res) {
   });
 
   busboy.on('finish', async () => {
+    publisher('worker.added', 'worker');
   });
 
   req.on('aborted', abort);
