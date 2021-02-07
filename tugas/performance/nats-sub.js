@@ -45,7 +45,7 @@ async function subToKeyValue(msg, reply, subject, sid) {
     let data;
     if (subject.includes('delete')) {
       data = JSON.parse(await redisGet(key));
-      if (!data) throw new Error('Data is Empty');
+      if (!data || data.value === 0) throw new Error('Data is Empty');
       data.value--;
     } else {
       data = JSON.parse(await redisGet(key)) || { value: 0, msg: [] };
