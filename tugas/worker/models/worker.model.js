@@ -22,4 +22,13 @@ async function destroy(id) {
     return result;
 }
 
-module.exports = { write,read,destroy }
+async function findOne(id) {
+    const result = await workers.findOne({
+        where: {
+            id: id,
+        },
+    })
+    return result;
+}
+
+module.exports = { write,read,destroy,findOne }

@@ -6,10 +6,11 @@ const { register, listWorker, removeWorker } = require('../lib/worker');
 const fs = require('fs');
 const path = require('path');
 const mime = require('mime-types');
+const nats = require('../../message/nats');
 
-// save data worker
 function saveWorker(req, res) {
     const busboy = new Busboy({ headers: req.headers })
+    let messageBus;
 
     let data = {        
         name: '',
@@ -33,22 +34,31 @@ function saveWorker(req, res) {
     })
 
     busboy.on('file', async (fieldname, file, filename, encoding, mimetype) => {
-        switch (fieldname) {
-            case 'photo':
+      switch (fieldname) {
+        case 'photo':
+                //object storage save
                 try {
                   const folder = 'photo';
-                  data.photo = "localhost:9999/photo/"+await saveFile(file, mimetype,folder);
+                  data.photo = "localhost:9999/"+folder+"/"+ await saveFile(file, mimetype, folder);
                 } catch (err) {
                   abort();
                 }
+
+                //send to bussines logic layer
                 if (finished) {
                   try {
-                    const worker = register(data);     // add insert worker herer
+                    const worker = register(data); 
+                    
                     res.setHeader('content-type', 'application/json');
                     res.write(JSON.stringify({
                         status: 'success',
                         message: 'success add data',
                     }));
+
+                    messageBus = {
+                      status: 'success',
+                      message: 'success get data',
+                    };
                   } catch (err) {
                     //add error handling
                     // if (err === ERROR_REGISTER_DATA_INVALID) {
@@ -56,9 +66,14 @@ function saveWorker(req, res) {
                     // } else {
                     //   res.statusCode = 500;
                     // }
+                    messageBus = {
+                      status: 'error',
+                      message: 'error register data',
+                    };
                     res.write('401');
                   }
                   res.end();
+                  nats.publish('worker.register',messageBus);
                 }
             break;
           default: {
@@ -92,58 +107,66 @@ async function getWorker(req, res) {
         message: 'success get data',
         data: data,
     })
+
+
+    const messageBus = {
+      status: 'success',
+      message: 'success get data',
+    };
+
+
     res.setHeader('Content-Type', 'application/json')
     res.statusCode = 200
     res.write(message)
     res.end()
+    nats.publish('worker.get',messageBus);
+    
 }
 
 //detele data worker
 function deleteWorker(req, res) {
     const uri = url.parse(req.url, true)
     const id = uri.pathname.replace('/worker/', '')
+    let messageBus; 
     try {
         const result = removeWorker(id);
         message = JSON.stringify({
             status: 'success',
             message: 'success delete data',
         })
+
+        messageBus = {
+          status: 'success',
+          message: 'success delete data',
+        };
+
         res.setHeader('Content-Type', 'application/json')
         res.statusCode = 200
         res.write(message)
         res.end()
+
+        nats.publish('worker.delete',messageBus);
 
     } catch (error) {
         message = JSON.stringify({
             status: 'error',
             message: error.toString(),
         })
+
+        messageBus = {
+          status: 'error',
+          message: 'error delete data',
+        };
+
         res.setHeader('Content-Type', 'application/json')
         res.statusCode = 400
         res.write(message)
         res.end()
+
+        nats.publish('worker.delete',messageBus);
     }
 }
 
-function photoService(req, res) {
-    const uri = url.parse(req.url, true);
-    const filename = uri.pathname.replace('/photo/', '');
-    if (!filename) {
-      res.statusCode = 400;
-      res.write('request tidak sesuai');
-      res.end();
-    }
-    const file = path.resolve(__dirname, `../storage/photo/${filename}`);
-    const exist = fs.existsSync(file);
-    if (!exist) {
-      res.statusCode = 404;
-      res.write('file tidak ditemukan');
-      res.end();
-    }
-    const fileRead = fs.createReadStream(file);
-    res.setHeader('Content-Type', mime.lookup(filename));
-    res.statusCode = 200;
-    fileRead.pipe(res);
-  }
 
-module.exports = { saveWorker, getWorker, deleteWorker,photoService}
+
+module.exports = { saveWorker, getWorker, deleteWorker }

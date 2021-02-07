@@ -5,16 +5,18 @@ const fs = require('fs');
 const url = require('url')
 const path = require('path');
 const mime = require('mime-types');
+const nats = require('../../message/nats');
 
 class TaskController {
   static async read(req, res) {
+
     try {
       const result = await listTask();  
       res.statusCode = 200;
       res.write(JSON.stringify(result));
       res.end();
     } catch (err) {
-      console.log(err);
+      console.log(err);ontrollers/storage.j
       res.statusCode = 500;
       res.end();
     }
@@ -22,32 +24,44 @@ class TaskController {
 
   static create(req, res) {
     const busboy = new Busboy({ headers: req.headers })
-
+    let messageBus;
     let data = {
-        assigneeId :'',        
-        name: '',
-        attachment: '',
+    assigneeId :'',        
+    name: '',
+    attachment: '',
     }
 
     let finished = false;
     function abort() {
-        req.unpipe(busboy)
-        if (!req.aborted) {
-            res.statusCode = 413
-            res.end()
-        }
+      req.unpipe(busboy)
+      if (!req.aborted) {
+        res.statusCode = 413
+        res.end()
+      }
     }
 
     busboy.on('field', (fieldname, val) => {
-        data[fieldname] = val
+      data[fieldname] = val
     })
 
     busboy.on('file', async (fieldname, file, filename, encoding, mimetype) => {
-        switch (fieldname) {
-            case 'attachment':
+      switch (fieldname) {
+          case 'attachment':
+              try {
+                const folder = 'attachment';
+                data.attachment = "localhost:9998/attachment/"+await saveFile(file, mimetype,folder);
+                console.log(data.attachment)
+              } catch (err) {
+                abort();
+              }
+              if (finished) {
                 try {
-                  const folder = 'attachment';
-                  data.attachment = "localhost:9999/attachment/"+await saveFile(file, mimetype,folder);
+                  const task = register(data);     // add insert task here
+                  res.setHeader('content-type', 'application/json');
+                  res.write(JSON.stringify({
+                      status: 'success',
+                      message: 'success add data',
+                  }));
                 } catch (err) {
                   abort();
                 }
@@ -59,6 +73,11 @@ class TaskController {
                         status: 'success',
                         message: 'success add data',
                     }));
+
+                    messageBus = {
+                      status: 'success',
+                      message: 'success add task',
+                    };
                   } catch (err) {
                     //add error handling
                     // if (err === ERROR_REGISTER_DATA_INVALID) {
@@ -66,24 +85,31 @@ class TaskController {
                     // } else {
                     //   res.statusCode = 500;
                     // }
+                    messageBus = {
+                      status: 'error',
+                      message: 'error add task',
+                    };
                     res.write('401');
                   }
                   res.end();
+                  nats.publish('task.create',messageBus);
                 }
-            break;
-          default: {
-            const noop = new Writable({
-              write(chunk, encding, callback) {
-                setImmediate(callback);
-              },
-            });
-            file.pipe(noop);
-          }
+                res.end();
+              }
+          break;
+        default: {
+          const noop = new Writable({
+            write(chunk, encding, callback) {
+              setImmediate(callback);
+            },
+          });
+          file.pipe(noop);
         }
-      });
+      }
+    });
     
     busboy.on('finish', async () => {
-        finished = true;
+      finished = true;
     });
 
     req.on('aborted', abort)
@@ -94,58 +120,58 @@ class TaskController {
 
   static async delete(req, res) {
     const id = +req.params.id;
+    let messageBus;
 
     try {
       const Task = await removeTask(id);
       const output = JSON.stringify({
         msg: `Task with id = ${id} has been deleted.`,
       });
+      messageBus = {
+        status: 'success',
+        message: 'success delete task',
+      };
       res.write(output);
       res.statusCode = 200;
       res.end();
+      nats.publish('task.delete',messageBus)
     } catch (err) {
-      console.log(err);
+      messageBus = {
+        status: 'error',
+        message: 'error delete task',
+      };
       res.statusCode = 500;
       res.end();
+      nats.publish('task.delete',messageBus)
     }
   }
 
   static async completed(req, res) {
     const id = +req.params.id;
+    let messageBus;
     try {
       const result = await completedTask(id)
       res.statusCode = 200;
       res.write(JSON.stringify({
         msg: `Task with id = ${id} has been finished.`,
       }));
+      messageBus = {
+        status: 'success',
+        message: 'success completed task',
+      };
       res.end();
+      nats.publish('task.completed',messageBus)
     } catch (err) {
-      console.log(err);
       res.statusCode = 500;
+      messageBus = {
+        status: 'error',
+        message: 'error completed task',
+      };
       res.end();
+      nats.publish('task.completed',messageBus)
     }
   }
 
-  static attachmentService(req, res) {
-    const uri = url.parse(req.url, true);
-    const filename = uri.pathname.replace('/attachment/', '');
-    if (!filename) {
-      res.statusCode = 400;
-      res.write('request tidak sesuai');
-      res.end();
-    }
-    const file = path.resolve(__dirname, `../storage/attachment/${filename}`);
-    const exist = fs.existsSync(file);
-    if (!exist) {
-      res.statusCode = 404;
-      res.write('file tidak ditemukan');
-      res.end();
-    }
-    const fileRead = fs.createReadStream(file);
-    res.setHeader('Content-Type', mime.lookup(filename));
-    res.statusCode = 200;
-    fileRead.pipe(res);
-  }
 }
 
 module.exports = TaskController;

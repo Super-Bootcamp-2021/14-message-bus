@@ -1,7 +1,7 @@
 const url = require('url');
-const { readService } = require("../../storage/storage")
+const {getSummary} = require('../controllers/performance.service')
 
-function storageRoutes(req, res) {
+function performanceRoutes(req, res) {
   req.params = {};
 
   let method = req.method;
@@ -21,15 +21,12 @@ function storageRoutes(req, res) {
   };
 
   switch (true) {
-    case /^\/attachment\/\w+/.test(uri.pathname):
-        if (method === 'GET') {
-            const folder = "attachment"
-            readService(req, res, folder)
-        } else {
-            message = 'Method tidak tersedia'
-            respond()
-        }
-      break
+    case uri.pathname === '/summary':
+      res.setHeader('content-type', 'application/json');
+      if (method === 'GET') {
+        getSummary(req, res);
+      }
+      break;
     default:
       message = 'Method tidak tersedia';
       statusCode = 404;
@@ -37,4 +34,4 @@ function storageRoutes(req, res) {
   }
 }
 
-module.exports = storageRoutes;
+module.exports = performanceRoutes;
