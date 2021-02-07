@@ -1,6 +1,6 @@
 /* eslint-disable no-unused-vars */
 const nats = require('nats');
-const { taskLog } = require('./performance.client');
+const { taskLog, workerLog } = require('./performance.client');
 
 const client = nats.connect();
 
@@ -16,7 +16,7 @@ client.on('close', (err) => {
 });
 
 function subscriber() {
-  let subTask1, subTask2, subTask3;
+  let subTask1, subTask2, subTask3, subTask4;
 
   subTask1 = client.subscribe(
     'task.created.*',
@@ -56,6 +56,20 @@ function subscriber() {
       }
     }
   );
+
+  subTask4 = client.subscribe(
+    'worker.created.*',
+    async (msg, reply, subject, sid) => {
+      await workerLog(msg);
+      console.log(msg);
+      if (msg === 'unsub') {
+        if (subTask4) {
+          client.unsubscribe(subTask4);
+          console.log('subTask4: unsubscribed');
+        }
+      }
+    }
+  );
 }
 
 function streamer(data) {
@@ -68,6 +82,9 @@ function streamer(data) {
       break;
     case 'task.cancel':
       client.publish('task.cancel', 'task.cancel');
+      break;
+    case 'worker.created':
+      client.publish('worker.created.successfully', 'worker.created');
       break;
     default:
       break;

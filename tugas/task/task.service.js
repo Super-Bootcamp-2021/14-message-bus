@@ -1,6 +1,7 @@
 const Busboy = require('busboy');
 const { Writable } = require('stream');
 const { saveFile } = require('../lib/storage');
+const { uploadAttachment } = require('../object-storage/storage-service');
 const {
   create,
   cancel,
@@ -34,7 +35,7 @@ function createSvc(req, res) {
     switch (fieldname) {
       case 'attachment':
         try {
-          data.attachment = await saveFile(file, mimetype);
+          data.attachment = await uploadAttachment(file, mimetype);
         } catch (err) {
           abort();
         }

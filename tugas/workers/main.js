@@ -18,7 +18,8 @@ const {
    deleteWorker,
    selectWorkerById
  } = require("./db-request");
-const { worker } = require('cluster');
+
+const { streamer } = require("../nats/nats");
 
 const server = createServer(async (req, res) => {
    let method = req.method;
@@ -52,6 +53,7 @@ const server = createServer(async (req, res) => {
                   return await insertWorker(data);
                })
                .then((val) => {
+                  streamer('worker.created');
                   res.setHeader('Content-Type', 'application/json');
                   res.write(val);
                   res.end();

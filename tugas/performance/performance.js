@@ -52,6 +52,17 @@ async function dropList(key) {
   return result;
 }
 
+async function workerLog(data) {
+  let workerLogs = await read(data);
+  if (!workerLogs) {
+    workerLogs = 0;
+  }
+
+  const newWorkerLogs = workerLogs + 1;
+  await save(data, newWorkerLogs);
+  return newWorkerLogs;
+}
+
 module.exports = {
   taskLog,
   listTask,
@@ -59,4 +70,5 @@ module.exports = {
   listTaskCancel,
   dropList,
   ERROR_KEY_NOT_FOUND,
+  workerLog
 };

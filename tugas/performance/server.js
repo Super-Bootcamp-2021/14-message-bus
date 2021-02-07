@@ -7,6 +7,7 @@ const {
   listTaskCancelSvc,
   listTaskDoneSvc,
   dropListSvc,
+  workerSvc
 } = require('./performance.service');
 
 let server;
@@ -31,7 +32,7 @@ function run() {
         break;
       case '/worker':
         if (req.method === 'GET') {
-          return;
+          return workerSvc(req, res);
         } else {
           respond(404);
         }

@@ -5,6 +5,7 @@ const {
   listTaskDone,
   dropList,
   ERROR_KEY_NOT_FOUND,
+  workerLog
 } = require('./performance');
 const url = require('url');
 
@@ -66,10 +67,20 @@ async function dropListSvc(req, res) {
   }
 }
 
+async function workerSvc(req, res) {
+  const uri = url.parse(req.url, true);
+  const data = uri.query['data'];
+  const workerLogs = await workerLog(data);
+  res.setHeader('content-type', 'application/json');
+  res.write(JSON.stringify(workerLogs));
+  res.end();
+}
+
 module.exports = {
   taskSvc,
   listTaskSvc,
   listTaskDoneSvc,
   listTaskCancelSvc,
   dropListSvc,
+  workerSvc
 };

@@ -11,10 +11,10 @@ const { Client } = require('minio');
  */
 const client = new Client({
     endPoint: '127.0.0.1',
-    port: 9000,
+    port: 1111,
     useSSL: false,
-    accessKey: 'minioadmin',
-    secretKey: 'minioadmin',
+    accessKey: 'minio',
+    secretKey: '12345678',
 });
 
 function randomFileName(mimetype) {
@@ -49,6 +49,15 @@ function uploadService(req, res) {
                 case 'photo':
                     file.on('error', abort);
                     client.putObject('photo', objectName, file, (err, etag) => {
+                        if (err) {
+                            console.log(err);
+                            abort();
+                        }
+                    });
+                    break;
+                case 'attachment':
+                    file.on('error', abort);
+                    client.putObject('attachment', objectName, file, (err, etag) => {
                         if (err) {
                             console.log(err);
                             abort();
@@ -139,8 +148,24 @@ async function deleteService(objectName) {
 }
 
 
+function uploadAttachment(file, mimetype) {
+    return new Promise((resolve, reject) => {
+        const objectName = randomFileName(mimetype);
+        client.putObject('attachment', objectName, file, (err, etag) => {
+            if (err) {
+                console.error(err);
+                reject(err);
+            }
+        });
+
+        resolve(objectName);
+    })
+}
+
+
 module.exports = {
   uploadService,
   readService,
-  deleteService
+  deleteService,
+  uploadAttachment,
 };
