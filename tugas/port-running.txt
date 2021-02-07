@@ -1,0 +1,6 @@
+PORT     SERVICE
+6000 --> Database Service
+7000 --> Workers Service
+8989 --> Task Service
+5454 --> Object Storage
+3232 --> Performance Service
