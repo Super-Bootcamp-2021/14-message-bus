@@ -5,6 +5,7 @@
   "version": "0.2.0",
   "configurations": [
 
+
     {
       "type": "node",
       "request": "launch",
@@ -16,7 +17,7 @@
       "console": "integratedTerminal",
       "runtimeExecutable": "npm",
       "runtimeArgs": [
-        "run-script", "start", "worker"
+        "run-script", "start", "performance"
       ],
     },
     {

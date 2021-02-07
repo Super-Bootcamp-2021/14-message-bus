@@ -4,3 +4,6 @@ node_modules
 file-storage
 minio
 start
+.minio.sys
+photo
+attachment

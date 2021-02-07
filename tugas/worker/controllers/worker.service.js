@@ -36,16 +36,19 @@ function saveWorker(req, res) {
     busboy.on('file', async (fieldname, file, filename, encoding, mimetype) => {
       switch (fieldname) {
         case 'photo':
+                //object storage save
                 try {
                   const folder = 'photo';
                   data.photo = "localhost:9999/"+folder+"/"+ await saveFile(file, mimetype, folder);
-                  console.log(data.photo)
                 } catch (err) {
                   abort();
                 }
+
+                //send to bussines logic layer
                 if (finished) {
                   try {
-                    // const worker = register(data);     // add insert worker herer
+                    const worker = register(data); 
+                    
                     res.setHeader('content-type', 'application/json');
                     res.write(JSON.stringify({
                         status: 'success',

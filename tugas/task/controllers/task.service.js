@@ -56,7 +56,7 @@ class TaskController {
               }
               if (finished) {
                 try {
-                  // const task = register(data);     // add insert task here
+                  const task = register(data);     // add insert task here
                   res.setHeader('content-type', 'application/json');
                   res.write(JSON.stringify({
                       status: 'success',

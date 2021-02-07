@@ -1,8 +1,10 @@
 const taskServer = require('./task/server');
 const workerServer = require('./worker/server');
+const performanceServer = require('./performance/server');
+
 const { connection } = require('./database/relational/connection');
 const nats = require('./message/nats');
-const subscriber = require('./performance/subscriber');
+const subscriber = require('./performance/nats-sub');
 /**
  * main routine
  * @returns {Promise<void>}
@@ -20,8 +22,9 @@ async function main(command) {
       workerServer.run();
       break;
     case 'performance':
-      await nats.connect();
+      // await nats.connect();
       subscriber.init();
+      performanceServer.run();
       break;
     default:
       console.log(`${command} tidak dikenali`);
