@@ -11,10 +11,10 @@ const { Client } = require('minio');
  */
 const client = new Client({
     endPoint: '127.0.0.1',
-    port: 9000,
+    port: 1111,
     useSSL: false,
-    accessKey: 'minioadmin',
-    secretKey: 'minioadmin',
+    accessKey: 'minio',
+    secretKey: '12345678',
 });
 
 function randomFileName(mimetype) {
