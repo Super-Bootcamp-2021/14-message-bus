@@ -1,13 +1,13 @@
 {
   "name": "message-bus",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "message bus using nats",
   "main": "index.js",
   "scripts": {
     "test": "nyc mocha",
     "start": "node .",
     "dev": "nodemon .",
-    "lint": "eslint ."
+    "lint": "eslint . --fix"
   },
   "author": "",
   "license": "ISC",
@@ -22,9 +22,13 @@
   },
   "dependencies": {
     "busboy": "^0.3.1",
+    "mariadb": "^2.5.2",
     "mime-types": "^2.1.28",
     "minio": "^7.0.18",
+    "mysql": "^2.18.1",
     "nats": "^1.4.12",
-    "nodemon": "^2.0.7"
+    "nodemon": "^2.0.7",
+    "redis": "^3.0.2",
+    "sequelize": "^6.5.0"
   }
 }
