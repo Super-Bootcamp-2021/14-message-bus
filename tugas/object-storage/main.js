@@ -45,7 +45,7 @@ const server = createServer(async (req, res) => {
   }
 });
 
-const PORT = 3232;
+const PORT = 5454;
 server.listen(PORT, () => {
   stdout.write(`server listening on port ${PORT}`);
 });
