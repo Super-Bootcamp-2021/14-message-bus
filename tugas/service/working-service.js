@@ -10,6 +10,8 @@ const {
   ERROR_WORKER_NOT_FOUND,
 } = require('./working-logic');
 const { upload } = require('../database/typeorm/storage');
+const { loggingMsg } = require('./performance-service')
+
 
 function storeWorkerService(req, res) {
   const busboy = new Busboy({ headers: req.headers });
@@ -48,6 +50,7 @@ function storeWorkerService(req, res) {
     try {
       const worker = await register(data);
       await res.write(JSON.stringify(worker));
+      loggingMsg('totalWorkers', res.statusCode);
     } catch (err) {
       if (err === ERROR_REGISTER_DATA_INVALID) {
         res.statusCode = 401;
@@ -65,11 +68,6 @@ function storeWorkerService(req, res) {
   req.pipe(busboy);
 }
 
-/**
- * service to get list of workers
- * @param {IncomingMessage} req
- * @param {ServerResponse} res
- */
 async function getWorkerService(req, res) {
   try {
     const workers = await list();
@@ -83,11 +81,6 @@ async function getWorkerService(req, res) {
   }
 }
 
-/**
- * service to remove a worker by it's id
- * @param {IncomingMessage} req
- * @param {ServerResponse} res
- */
 async function getWorkerByIdService(req, res) {
   const uri = url.parse(req.url, true);
   const id = uri.query['id'];
