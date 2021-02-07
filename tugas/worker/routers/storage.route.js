@@ -1,7 +1,7 @@
 const url = require('url');
 const {
-  photoService,
-} = require('../controllers/worker.service')
+  readService,
+} = require('../../storage/storage')
 
 
 function storageRoutes(req, res) {
@@ -26,7 +26,8 @@ function storageRoutes(req, res) {
   switch (true) {
     case /^\/photo\/\w+/.test(uri.pathname):
         if (method === 'GET') {
-            photoService(req, res)
+            const folder = "photo"
+            readService(req, res, folder)
         } else {
             message = 'Method tidak tersedia'
             respond()

@@ -8,7 +8,6 @@ const path = require('path');
 const mime = require('mime-types');
 const nats = require('../../message/nats');
 
-// save data worker
 function saveWorker(req, res) {
     const busboy = new Busboy({ headers: req.headers })
     let messageBus;
@@ -35,17 +34,18 @@ function saveWorker(req, res) {
     })
 
     busboy.on('file', async (fieldname, file, filename, encoding, mimetype) => {
-        switch (fieldname) {
-            case 'photo':
+      switch (fieldname) {
+        case 'photo':
                 try {
                   const folder = 'photo';
-                  data.photo = "localhost:9999/photo/"+await saveFile(file, mimetype,folder);
+                  data.photo = "localhost:9999/"+folder+"/"+ await saveFile(file, mimetype, folder);
+                  console.log(data.photo)
                 } catch (err) {
                   abort();
                 }
                 if (finished) {
                   try {
-                    const worker = register(data);     // add insert worker herer
+                    // const worker = register(data);     // add insert worker herer
                     res.setHeader('content-type', 'application/json');
                     res.write(JSON.stringify({
                         status: 'success',
@@ -164,25 +164,6 @@ function deleteWorker(req, res) {
     }
 }
 
-function photoService(req, res) {
-    const uri = url.parse(req.url, true);
-    const filename = uri.pathname.replace('/photo/', '');
-    if (!filename) {
-      res.statusCode = 400;
-      res.write('request tidak sesuai');
-      res.end();
-    }
-    const file = path.resolve(__dirname, `../storage/photo/${filename}`);
-    const exist = fs.existsSync(file);
-    if (!exist) {
-      res.statusCode = 404;
-      res.write('file tidak ditemukan');
-      res.end();
-    }
-    const fileRead = fs.createReadStream(file);
-    res.setHeader('Content-Type', mime.lookup(filename));
-    res.statusCode = 200;
-    fileRead.pipe(res);
-  }
 
-module.exports = { saveWorker, getWorker, deleteWorker,photoService}
+
+module.exports = { saveWorker, getWorker, deleteWorker }
