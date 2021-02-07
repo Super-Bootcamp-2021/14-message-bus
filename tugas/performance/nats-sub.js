@@ -25,21 +25,38 @@ async function subToKeyValue(msg, reply, subject, sid) {
   const clientRed = createClient();
   const redisSet = setAsync(clientRed);
   const redisGet = getAsync(clientRed);
-  let key = ['.trial'];
 
-  if (subject.includes('worker')) {
-    key.unshift('worker');
-  } else {
-    key.unshift('task');
-  }
+  const res = subject.replace(/\.create|\.delete|\.register/, '');
+  const key = `total.${res}`;
 
-  key = key.join('');
+  /**
+   * key value
+   * task.create => total.task value++
+   * task.delete => total.task value--
+   * task.complete => total.task.complete value++
+   *
+   * worker.delete => total.worker value--
+   * worker.register => total.worker value++
+   *
+   */
 
   try {
-    const data = JSON.parse(await redisGet(key)) || [];
-    data.push({ message: msg, date: getCurrentDate() });
-    await redisSet('task.trial', JSON.stringify(data, null, 2));
-    console.log(data);
+    console.log(key)
+    let data;
+    if (subject.includes('delete')) {
+      data = JSON.parse(await redisGet(key));
+      if (!data) throw new Error('Data is Empty');
+      data.value--;
+    } else {
+      data = JSON.parse(await redisGet(key)) || { value: 0, msg: [] };
+      data.value++;
+    }
+
+    data.msg.push({
+      ...msg,
+      // date: getCurrentDate()
+    });
+    await redisSet(key, JSON.stringify(data));
   } catch (err) {
     console.log(err);
   }
@@ -61,10 +78,9 @@ function streamer() {
     status: 'success',
     message: 'success add task',
   };
-  client.publish('get.all');
   // event
   client.publish('task.create', JSON.stringify(messageBusCreate, null, 2));
-  client.publish('task.delete', JSON.stringify(messageBusDelete, null, 2));
+  // client.publish('task.delete', JSON.stringify(messageBusDelete, null, 2));
   client.publish(
     'task.completed',
     JSON.stringify(messageBusCompleted, null, 2)
@@ -86,8 +102,7 @@ function streamer() {
   };
 
   client.publish('worker.register', JSON.stringify(workerRegister, null, 2));
-  client.publish('worker.delete', JSON.stringify(workerDelete, null, 2));
-  client.publish('worker.get', JSON.stringify(workerGet, null, 2));
+  // client.publish('worker.delete', JSON.stringify(workerDelete, null, 2));
 }
 
 function getCurrentDate() {
