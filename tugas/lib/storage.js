@@ -1,8 +1,19 @@
-const fs = require('fs');
-const path = require('path');
 const mime = require('mime-types');
 // eslint-disable-next-line no-unused-vars
 const { Readable } = require('stream');
+const { Client } = require('minio');
+
+/**
+ * set MINIO_ROOT_USER=local-minio
+ * set MINIO_ROOT_PASSWORD=local-test-secret
+ */
+const client = new Client({
+  endPoint: '127.0.0.1',
+  port: 9000,
+  useSSL: false,
+  accessKey: 'minio',
+  secretKey: 'miniostorage',
+});
 
 /**
  * generate random file name
@@ -19,25 +30,15 @@ function randomFileName(mimetype) {
   );
 }
 
-/**
- * save file to file system
- * @param {Readable} file readable file stream
- * @param {string} mimetype mime type
- * @returns {Promise<string>} generated filename
- */
-function saveFile(file, mimetype) {
+function saveFile(bucket, file, mimetype) {
   const destname = randomFileName(mimetype);
-  const store = fs.createWriteStream(
-    path.resolve(__dirname, `../file-storage/${destname}`)
-  );
   return new Promise((resolve, reject) => {
-    store.on('finish', () => {
+    client.putObject(bucket, destname, file, (err, etag) => {
+      if (err) {
+        reject(err);
+      }
       resolve(destname);
     });
-    store.on('error', (err) => {
-      reject(err);
-    });
-    file.pipe(store);
   });
 }
 
