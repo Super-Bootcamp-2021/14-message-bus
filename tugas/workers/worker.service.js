@@ -9,6 +9,7 @@ const {
   ERROR_WORKER_NOT_FOUND,
 } = require('./worker');
 const { saveFile } = require('../lib/storage');
+const { addWorkerLog, removeWorkerLog } = require('./worker.nats');
 
 function registerSvc(req, res) {
   const busboy = new Busboy({ headers: req.headers });
@@ -43,6 +44,7 @@ function registerSvc(req, res) {
         if (finished) {
           try {
             const worker = await register(data);
+            addWorkerLog();
             res.setHeader('content-type', 'application/json');
             res.write(JSON.stringify(worker));
           } catch (err) {
@@ -102,13 +104,15 @@ async function removeSvc(req, res) {
   const uri = url.parse(req.url, true);
   const id = uri.query['id'];
   if (!id) {
+    const ERROR_ID_NOT_FOUND = 'parameter id tidak ditemukan';
     res.statusCode = 401;
-    res.write('parameter id tidak ditemukan');
+    res.write(ERROR_ID_NOT_FOUND);
     res.end();
     return;
   }
   try {
     const worker = await remove(parseInt(id));
+    removeWorkerLog();
     res.setHeader('content-type', 'application/json');
     res.statusCode = 200;
     res.write(JSON.stringify(worker));
